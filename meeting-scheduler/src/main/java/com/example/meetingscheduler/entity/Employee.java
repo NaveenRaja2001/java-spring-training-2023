@@ -37,7 +37,7 @@ public class Employee {
 
 
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee",cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     private List<TimeSlot> timeSlots;
 
     public  void addTimeSlot(TimeSlot timeSlot){

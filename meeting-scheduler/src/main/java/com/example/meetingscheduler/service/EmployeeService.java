@@ -4,4 +4,6 @@ import com.example.meetingscheduler.entity.Employee;
 
 public interface EmployeeService {
     Employee findById(int id);
+
+    void update(Employee employee1);
 }

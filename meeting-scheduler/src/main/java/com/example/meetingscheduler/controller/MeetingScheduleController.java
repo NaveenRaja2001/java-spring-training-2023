@@ -1,10 +1,12 @@
 package com.example.meetingscheduler.controller;
 
+import com.example.meetingscheduler.entity.Employee;
 import com.example.meetingscheduler.entity.Room;
 import com.example.meetingscheduler.entity.Teams;
 import com.example.meetingscheduler.entity.TimeSlot;
 import com.example.meetingscheduler.projection.TimeSlotView;
 import com.example.meetingscheduler.responseObject.TimeSlotResponse;
+import com.example.meetingscheduler.service.EmployeeService;
 import com.example.meetingscheduler.service.RoomService;
 import com.example.meetingscheduler.service.TeamService;
 import com.example.meetingscheduler.service.TimeSlotService;
@@ -24,8 +26,12 @@ public class MeetingScheduleController {
 
     TimeSlotService timeSlotService;
     RoomService roomService;
+
+    @Autowired
+    EmployeeService employeeService;
     @Autowired
     TeamService teamService;
+
     @Autowired
     public MeetingScheduleController(TimeSlotService timeSlotService, RoomService roomService) {
         this.timeSlotService = timeSlotService;
@@ -33,14 +39,13 @@ public class MeetingScheduleController {
     }
 
     /**
-     *
      * @param theTimeSlot
      * @param teamId
      * @param teamCount
      * @return
      */
     @GetMapping("/findrooms")
-    public Map<String, Integer> availableRoomsBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam Optional<Integer> teamId,@RequestParam Optional<Integer> teamCount) {
+    public Map<String, Integer> availableRoomsBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam Optional<Integer> teamId, @RequestParam Optional<Integer> teamCount) {
         LocalDate date1 = theTimeSlot.getDate();
         List<TimeSlotView> timeSlots = timeSlotService.findTimeSlotIdByDate(date1);
         List<TimeSlotResponse> timeSlotResponses = new ArrayList<>();
@@ -65,12 +70,12 @@ public class MeetingScheduleController {
         sortedAvailableRoom = sortByValue(availableRoomNames);
 
         if (teamId.isPresent() || teamCount.isPresent()) {
-            int teamSize=0;
-            if(teamId.isPresent()) {
+            int teamSize = 0;
+            if (teamId.isPresent()) {
                 Teams teams = teamService.find(teamId.get());
-               teamSize= teams.getTeamCount();
-            }else {
-                teamSize=teamCount.get();
+                teamSize = teams.getTeamCount();
+            } else {
+                teamSize = teamCount.get();
             }
 
             for (Map.Entry<String, Integer> entry : sortedAvailableRoom.entrySet()) {
@@ -107,13 +112,38 @@ public class MeetingScheduleController {
     }
 
 
-    @GetMapping("/findEmployees")
-    public void availableEmployeesBasedOnDateAndTime(){
-   
-
-
+    @GetMapping("/findemployees")
+    public HashMap<Integer, Boolean> availableEmployeesBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam int teamId) {
+        Teams team = teamService.find(teamId);
+        List<Employee> employees = team.getEmployees();
+        HashMap<Integer, Boolean> availableEmployeeStatus = new HashMap<>();
+        for (Employee employee : employees) {
+            availableEmployeeStatus.put(employee.getEmployeeId(), availableEmployeeBasedOnDateAndTime(theTimeSlot, employee));
+        }
+        return availableEmployeeStatus;
     }
 
+    public boolean availableEmployeeBasedOnDateAndTime(TimeSlot theTimeSlot, Employee employee) {
+        LocalDate date = theTimeSlot.getDate();
+        LocalTime tempStartTime = theTimeSlot.getStartTime();
+        LocalTime tempEndTime = theTimeSlot.getEndTime();
 
+        List<Teams> teams = employee.getTeams();
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        for (Teams teams1 : teams) {
+            timeSlots.addAll(teams1.getTimeSlots());
+        }
 
+        for (TimeSlot timeSlot : timeSlots) {
+            System.out.print(tempEndTime);
+            System.out.print(timeSlot.getStartTime());
+            System.out.print(timeSlot.getEndTime());
+            System.out.print((tempEndTime.isAfter(timeSlot.getStartTime()) && tempEndTime.isBefore(timeSlot.getEndTime())));
+            if ((date.isEqual(timeSlot.getDate())) && ((tempStartTime.isAfter(timeSlot.getStartTime()) && tempStartTime.isBefore(timeSlot.getEndTime())) || (tempEndTime.isAfter(timeSlot.getStartTime()) && tempEndTime.isBefore(timeSlot.getEndTime())))) {
+                return false;
+            }
+        }
+        return true;
+
+    }
 }

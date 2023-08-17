@@ -37,8 +37,8 @@ public class RoomBookingController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("/add")
-    public void addTeams() {
+    @GetMapping("/addData")
+    public String addTeams() {
         Employee e1 = new Employee("Naveen", "N", "nav@gmail.com");
         Employee e2 = new Employee("hari", "S", "hari@gmail.com");
         Employee e3 = new Employee("ashok", "A", "ashok@gmail.com");
@@ -98,7 +98,7 @@ public class RoomBookingController {
         System.out.println(timeSlot.getTeams());
         System.out.println(timeSlot.getRooms());
         timeSlotService.save(timeSlot);
-
+return "Data added successfully   ('_')  ";
     }
 
     @PostMapping("/create-meeting/{employeeId}/{roomName}")
@@ -114,11 +114,13 @@ public class RoomBookingController {
 
 
 Room room=roomService.find(roomName);
+        Teams givenTeam=null;
         timeSlot.addRoom(room);
         Employee employee = employeeService.findById(employeeId);
         timeSlot.setEmployee(employee);
         if (teamid.isPresent()) {
-            timeSlot.addTeam(teamService.find(teamid.get()));
+            givenTeam=teamService.find(teamid.get());
+            timeSlot.addTeam(givenTeam);
         } else {
             List<Teams> teams = employee.getTeams();
             for (Teams team : teams) {
@@ -139,7 +141,7 @@ Room room=roomService.find(roomName);
     }
 
     private boolean roomAvailable(Room room, LocalDate date, LocalTime startTime, LocalTime endTime) {
-        List<TimeSlot> timeSlots=timeSlotRepository.findByRoomsAndDateAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(room,date,startTime,endTime);
+        List<TimeSlot> timeSlots=timeSlotService.findRoomAvailableBasedOnTime(room,date,endTime,startTime);
         System.out.print(timeSlots);
         if(timeSlots.isEmpty()){
             return true;
@@ -164,12 +166,17 @@ Room room=roomService.find(roomName);
         Teams newTeam = new Teams("Temporary Team", employees.size());
         for (int i : employees) {
             Employee employee = employeeService.findById(i);
+
             newTeam.addEmployee(employee);
         }
         teamService.save(newTeam);
         timeSlot.addTeam(newTeam);
 
         timeSlotService.save(timeSlot);
+
+
+
+
         return "new team is and meeting is scheduled successfully";
     }
 
@@ -178,7 +185,6 @@ Room room=roomService.find(roomName);
         TimeSlot timeSlot = timeSlotService.find(id);
         LocalTime meetingBookedTime = timeSlot.getStartTime();
         LocalTime localTime = LocalTime.now();
-System.out.println(localTime+"dfjhasgfkjsghfdsghfkjerbgfdweogfwoeiughfqweouygrfweiuygfwieuygfweuy");
         if (localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))){
             timeSlotService.delete(id);
             return "TimeSlot is deleted successfully";
@@ -187,10 +193,35 @@ System.out.println(localTime+"dfjhasgfkjsghfdsghfkjerbgfdweogfwoeiughfqweouygrfw
         }
     }
 
-    @PostMapping("/room")
-    public void findTheRoom(){
+   @PutMapping("/edit-meeting")
+    public String updateMeeting(@RequestBody TimeSlot timeSlot,@RequestParam int id){
 
-    }
+        TimeSlot theTimeSlot=timeSlotService.find(id);
+       List <Room> room=theTimeSlot.getRooms();
+       if (!roomAvailable(room.get(0), timeSlot.getDate(),timeSlot.getStartTime(),timeSlot.getEndTime())) {
+           return "This Room is already booked in this timing";
+       }
+       else {
+           theTimeSlot.setStartTime(timeSlot.getStartTime());
+           theTimeSlot.setEndTime(timeSlot.getEndTime());
+
+           timeSlotService.save(theTimeSlot);
+           return "meeting timing is updated";
+
+       }
+
+   }
+
+
+   @PutMapping("edit-meeting/{timeslotId}")
+    public String updateMeetingDescription(@RequestParam String description,@PathVariable int timeslotId){
+       TimeSlot timeSlot=timeSlotService.find(timeslotId);
+       timeSlot.setDescription(description);
+       timeSlotService.save(timeSlot);
+        return "Description updated Successfully";
+   }
+
+
 
 
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -39,5 +40,10 @@ public class TimeSlotServiceImpl implements TimeSlotService{
     @Override
     public TimeSlot find(int id) {
         return timeSlotRepository.findById(id);
+    }
+
+    @Override
+    public List<TimeSlot> findRoomAvailableBasedOnTime(Room room, LocalDate date, LocalTime endTime, LocalTime startTime) {
+        return timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(room,date,endTime,startTime);
     }
 }
