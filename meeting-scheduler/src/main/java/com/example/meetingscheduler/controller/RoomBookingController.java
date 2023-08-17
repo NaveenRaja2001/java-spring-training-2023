@@ -72,12 +72,12 @@ public class RoomBookingController {
         teamService.save(t4);
 
         Room r1 = new Room("TrainingRoom", 12);
-        Room r2 = new Room("Chennai", 12);
+        Room r2 = new Room("Chennai", 3);
 
-        Room r3 = new Room("Austin", 12);
-        Room r4 = new Room("Sydney", 12);
-        Room r5 = new Room("Tanjore", 12);
-        Room r6 = new Room("London", 12);
+        Room r3 = new Room("Austin", 6);
+        Room r4 = new Room("Sydney", 17);
+        Room r5 = new Room("Tanjore", 40);
+        Room r6 = new Room("London", 5);
 
 
         roomService.save(r1);
