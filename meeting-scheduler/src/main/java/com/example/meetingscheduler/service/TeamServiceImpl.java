@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TeamServiceImpl implements TeamService{
+    @Autowired
      private TeamsRepository teamsRepository;
   @Autowired
-    public TeamServiceImpl(TeamsRepository teamsRepository) {
+    public TeamServiceImpl() {
         this.teamsRepository = teamsRepository;
     }
 
