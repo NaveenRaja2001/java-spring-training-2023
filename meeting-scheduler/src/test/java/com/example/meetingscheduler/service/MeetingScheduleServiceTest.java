@@ -44,7 +44,12 @@ class MeetingScheduleServiceTest {
     TimeSlotRepository timeSlotRepository;
 
     @Test
-    void addMeeting() {
+    void addMeeting() throws Exception {
+        TimeSlotResponse expectedResponse=new TimeSlotResponse(2,"hai from team",LocalDate.parse("2023-08-15"), LocalTime.parse("01:10:00"), LocalTime.parse("02:45:00"));
+        RoomsResponse roomsResponse=new RoomsResponse(0,"Chennai",3);
+        TeamsResponse teamsResponse=new TeamsResponse(0,6,"Snow");
+        expectedResponse.setTeams(List.of(teamsResponse));
+        expectedResponse.setRooms(List.of(roomsResponse));
         Employee e7 = new Employee("pavithra", "S", "pavithra@gmail.com");
         Room r2 = new Room("Chennai", 3);
 
@@ -56,9 +61,9 @@ class MeetingScheduleServiceTest {
         when(timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(r2, LocalDate.parse("2023-08-15"), LocalTime.parse("02:45:00"), LocalTime.parse("01:10:00"))).thenReturn(new ArrayList<TimeSlot>());
         TimeSlot theTimeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("01:10:00"), LocalTime.parse("02:45:00"), "hai from team");
         theTimeSlot.setTimeSlotId(2);
-        String response = meetingScheduleService.addMeeting(theTimeSlot, 7, "Chennai", Optional.of(4));
+        TimeSlotResponse response = meetingScheduleService.addMeeting(theTimeSlot, 7, "Chennai", Optional.of(4));
 
-        assertEquals(response, "Meeting Booked Successfully");
+        assertEquals(response,expectedResponse);
 
     }
 
@@ -90,14 +95,12 @@ TimeSlotResponse expectedResponse=new TimeSlotResponse(0,"hai apart from team",L
     }
 
     @Test
-    void deleteMeeting() {
-        TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "");
-        LocalDate localDate = LocalDate.parse("2023-08-15");
-        LocalTime startTime = LocalTime.parse("10:15:45");
-        LocalTime lastTime = LocalTime.parse("12:15:00");
+    void deleteMeeting() throws Exception {
+        TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-26"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "");
+        TimeSlotResponse expectResponse=new TimeSlotResponse(timeSlot.getTimeSlotId(),timeSlot.getDescription(),timeSlot.getDate(),timeSlot.getStartTime(),timeSlot.getEndTime());
         when(timeSlotRepository.findById(1)).thenReturn(timeSlot);
-        String response = meetingScheduleService.deleteMeeting(1);
-        assertEquals(response, "TimeSlot is deleted successfully");
+        TimeSlotResponse response = meetingScheduleService.deleteMeeting(1);
+        assertEquals(response,expectResponse );
     }
 
     @Test

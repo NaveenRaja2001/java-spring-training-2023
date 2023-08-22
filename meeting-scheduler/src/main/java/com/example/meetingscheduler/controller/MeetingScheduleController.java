@@ -126,8 +126,8 @@ public class MeetingScheduleController {
      * @return
      */
     @PostMapping("/create-meeting/{employeeId}/{roomName}")
-    public ResponseEntity<String> addMeeting(@RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName, @RequestParam Optional<Integer> teamid) {
-        String value=meetingScheduleService.addMeeting(timeSlot,employeeId,roomName,teamid);
+    public ResponseEntity<TimeSlotResponse> addMeeting(@RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName, @RequestParam Optional<Integer> teamid) throws Exception {
+        TimeSlotResponse value=meetingScheduleService.addMeeting(timeSlot,employeeId,roomName,teamid);
         return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 
@@ -152,8 +152,8 @@ public class MeetingScheduleController {
 
 
     @DeleteMapping("/delete-meeting")
-    public ResponseEntity<String> deleteMeeting(@RequestParam int id) {
-        String value= meetingScheduleService.deleteMeeting(id);
+    public ResponseEntity<TimeSlotResponse> deleteMeeting(@RequestParam int id) throws Exception {
+        TimeSlotResponse value= meetingScheduleService.deleteMeeting(id);
         return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 

@@ -11,13 +11,13 @@ import java.util.Optional;
 
 public interface MeetingScheduleService{
 
-    String addMeeting(TimeSlot timeSlot, int employeeId, String roomName, Optional<Integer> teamid);
+    TimeSlotResponse addMeeting(TimeSlot timeSlot, int employeeId, String roomName, Optional<Integer> teamid) throws Exception;
 
     boolean roomAvailable(Room room, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     TimeSlotResponse createNewTeam(List<Integer> employees, TimeSlot timeSlot, int employeeId, String roomName) throws Exception;
 
-    String deleteMeeting(int id);
+    TimeSlotResponse deleteMeeting(int id) throws Exception;
 
     String updateMeeting(TimeSlot timeSlot, int id);
 

@@ -41,7 +41,7 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
     }
 
     @Override
-    public String addMeeting(TimeSlot timeSlot, int employeeId, String roomName, Optional<Integer> teamid) {
+    public TimeSlotResponse addMeeting(TimeSlot timeSlot, int employeeId, String roomName, Optional<Integer> teamid) throws Exception {
         //meeting timing should  be minimum 30 minutes
         if (!timeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(timeSlot.getStartTime())) {
             throw new IllegalArgumentException("Minimum meeting time should be greater than 30 minus");
@@ -65,10 +65,16 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
         System.out.println(timeSlot.getTeams());
         System.out.println(timeSlot.getRooms());
         if (!roomAvailable(room, timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime())) {
-            return "sorry room not available";
+            throw new Exception("sorry room not available");
         } else {
             timeSlotRepository.save(timeSlot);
-            return "Meeting Booked Successfully";
+            TimeSlotResponse timeSlotResponse=new TimeSlotResponse(timeSlot.getTimeSlotId(),timeSlot.getDescription(),timeSlot.getDate(),timeSlot.getStartTime(),timeSlot.getEndTime());
+            TeamsResponse teamsResponse=new TeamsResponse(givenTeam.getTeamId(),givenTeam.getTeamCount(),givenTeam.getTeamName());
+            timeSlotResponse.setTeams(List.of(teamsResponse));
+            RoomsResponse roomsResponse=new RoomsResponse(room.getRoomId(),room.getRoomName(),room.getRoomCapacity());
+            timeSlotResponse.setTeams(List.of(teamsResponse));
+            timeSlotResponse.setRooms(List.of(roomsResponse));
+            return timeSlotResponse;
         }
     }
 
@@ -124,16 +130,17 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
     }
 
     @Override
-    public String deleteMeeting(int id) {
+    public TimeSlotResponse deleteMeeting(int id) throws Exception {
         TimeSlot timeSlot = timeSlotRepository.findById(id);
         LocalTime meetingBookedTime = timeSlot.getStartTime();
         LocalTime localTime = LocalTime.now();
         LocalDate localDate=LocalDate.now();
-        if (localDate.equals(timeSlot.getDate())&&localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))) {
+        if (((localDate.isBefore(timeSlot.getDate()))||(localDate.equals(timeSlot.getDate())))&&localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))) {
+            TimeSlotResponse timeSlotResponse=new TimeSlotResponse(timeSlot.getTimeSlotId(),timeSlot.getDescription(),timeSlot.getDate(),timeSlot.getStartTime(),timeSlot.getEndTime());
             timeSlotRepository.deleteById(id);
-            return "TimeSlot is deleted successfully";
+            return timeSlotResponse;
         } else {
-            return "Can't delete the meeting at this moment";
+           throw new Exception("Can't delete the meeting at this moment");
         }
     }
 

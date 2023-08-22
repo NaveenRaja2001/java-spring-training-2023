@@ -7,6 +7,7 @@ import com.example.meetingscheduler.entity.Teams;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 public class TimeSlotResponse {
    private int getTimeSlotId;
@@ -98,5 +99,18 @@ public TimeSlotResponse(){}
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeSlotResponse that = (TimeSlotResponse) o;
+        return getTimeSlotId == that.getTimeSlotId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTimeSlotId);
     }
 }

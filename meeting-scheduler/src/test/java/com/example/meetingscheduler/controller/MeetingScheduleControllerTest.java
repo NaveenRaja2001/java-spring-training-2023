@@ -1,6 +1,9 @@
 package com.example.meetingscheduler.controller;
 
 import com.example.meetingscheduler.entity.TimeSlot;
+import com.example.meetingscheduler.responseObject.RoomsResponse;
+import com.example.meetingscheduler.responseObject.TeamsResponse;
+import com.example.meetingscheduler.responseObject.TimeSlotResponse;
 import com.example.meetingscheduler.service.MeetingScheduleService;
 import com.example.meetingscheduler.service.MeetingScheduleServiceImpl;
 
@@ -32,33 +35,41 @@ class MeetingScheduleControllerTest {
     MeetingScheduleServiceImpl meetingScheduleService;
 
     @Test
-    void addMeeting() {
+    void addMeeting() throws Exception {
         TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("01:10:00"), LocalTime.parse("02:45:00"), " from team");
         timeSlot.setTimeSlotId(2);
-        when(meetingScheduleService.addMeeting(timeSlot, 7, "Chennai", Optional.of(4))).thenReturn("Meeting Booked Successfully");
-        ResponseEntity<String> response = meetingScheduleController.addMeeting(timeSlot, 7, "Chennai", Optional.of(4));
-        assertEquals(response.getBody(), "Meeting Booked Successfully");
+        TimeSlotResponse expectedResponse=new TimeSlotResponse(0,"hai apart from team",LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"));
+        RoomsResponse roomsResponse=new RoomsResponse(0,"London",5);
+        TeamsResponse teamsResponse=new TeamsResponse(0,4,"Temporary Team");
+        expectedResponse.setTeams(List.of(teamsResponse));
+        expectedResponse.setRooms(List.of(roomsResponse));
+        when(meetingScheduleService.addMeeting(timeSlot, 7, "Chennai", Optional.of(4))).thenReturn(expectedResponse);
+        ResponseEntity<TimeSlotResponse> response = meetingScheduleController.addMeeting(timeSlot, 7, "Chennai", Optional.of(4));
+        assertEquals(response.getBody(), expectedResponse);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 
     @Test
-    void createNewTeam() {
-//        TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "hai apart from team");
-//        when(meetingScheduleService.createNewTeam(List.of(1, 2, 6, 5, 9), timeSlot, 6, "London")).thenReturn("New team is and meeting is scheduled successfully");
-//        ResponseEntity<String> response = meetingScheduleController.createNewTeam(List.of(1, 2, 6, 5, 9), timeSlot, 6, "London");
-//        assertEquals(response.getBody(), "New team is and meeting is scheduled successfully");
-//        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+    void createNewTeam() throws Exception {
+        TimeSlotResponse expectedResponse=new TimeSlotResponse(0,"hai apart from team",LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"));
+        RoomsResponse roomsResponse=new RoomsResponse(0,"London",5);
+        TeamsResponse teamsResponse=new TeamsResponse(0,4,"Temporary Team");
+        expectedResponse.setTeams(List.of(teamsResponse));
+        expectedResponse.setRooms(List.of(roomsResponse));
+        TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "hai apart from team");
+        when(meetingScheduleService.createNewTeam(List.of(1, 2, 6, 5, 9), timeSlot, 6, "London")).thenReturn(expectedResponse);
+        ResponseEntity<TimeSlotResponse> response = meetingScheduleController.createNewTeam(List.of(1, 2, 6, 5, 9), timeSlot, 6, "London");
+        assertEquals(response.getBody(), expectedResponse);
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 
     @Test
-    void deleteMeeting() {
+    void deleteMeeting() throws Exception {
 //        TimeSlot timeSlot=new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"),LocalTime.parse("23:46:00"),"");
-        when(meetingScheduleService.deleteMeeting(1)).thenReturn("TimeSlot is deleted successfully");
-        when(meetingScheduleService.deleteMeeting(2)).thenReturn("Can't delete the meeting at this moment");
-        ResponseEntity<String> response = meetingScheduleController.deleteMeeting(1);
-        ResponseEntity<String> response2 = meetingScheduleController.deleteMeeting(2);
-        assertEquals(response.getBody(), "TimeSlot is deleted successfully");
-        assertEquals(response2.getBody(), "Can't delete the meeting at this moment");
+        TimeSlotResponse expectedResponse=new TimeSlotResponse(2,"hai apart from team",LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"));
+        when(meetingScheduleService.deleteMeeting(2)).thenReturn(expectedResponse);
+        ResponseEntity<TimeSlotResponse> response = meetingScheduleController.deleteMeeting(2);
+        assertEquals(response.getBody(),expectedResponse);
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
 
     }
