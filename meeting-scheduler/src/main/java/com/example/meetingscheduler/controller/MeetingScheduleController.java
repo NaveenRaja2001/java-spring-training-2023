@@ -5,11 +5,10 @@ import com.example.meetingscheduler.entity.Room;
 import com.example.meetingscheduler.entity.Teams;
 import com.example.meetingscheduler.entity.TimeSlot;
 import com.example.meetingscheduler.repository.TimeSlotRepository;
-import com.example.meetingscheduler.service.EmployeeService;
-import com.example.meetingscheduler.service.RoomService;
-import com.example.meetingscheduler.service.TeamService;
-import com.example.meetingscheduler.service.TimeSlotService;
+import com.example.meetingscheduler.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,16 +26,23 @@ public class MeetingScheduleController {
     private TimeSlotService timeSlotService;
     private EmployeeService employeeService;
 
-    @Autowired
-    TimeSlotRepository timeSlotRepository;
 
-    @Autowired
-    public MeetingScheduleController(TeamService teamService, RoomService roomService, TimeSlotService timeSlotService, EmployeeService employeeService) {
+   private MeetingScheduleServiceImpl meetingScheduleService;
+
+
+   private TimeSlotRepository timeSlotRepository;
+@Autowired
+    public MeetingScheduleController(TeamService teamService, RoomService roomService, TimeSlotService timeSlotService, EmployeeService employeeService, MeetingScheduleServiceImpl meetingScheduleService, TimeSlotRepository timeSlotRepository) {
         this.teamService = teamService;
         this.roomService = roomService;
         this.timeSlotService = timeSlotService;
         this.employeeService = employeeService;
+        this.meetingScheduleService = meetingScheduleService;
+        this.timeSlotRepository = timeSlotRepository;
     }
+
+
+
 
     /**
      * add mock data to table
@@ -103,7 +109,7 @@ public class MeetingScheduleController {
         System.out.println(timeSlot);
         System.out.println(timeSlot.getTeams());
         System.out.println(timeSlot.getRooms());
-        timeSlotService.save(timeSlot);
+        timeSlotRepository.save(timeSlot);
         return "Data added successfully   ('_')  ";
     }
 
@@ -117,56 +123,12 @@ public class MeetingScheduleController {
      * @return
      */
     @PostMapping("/create-meeting/{employeeId}/{roomName}")
-    public String addMeeting(@RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName, @RequestParam Optional<Integer> teamid) {
-        //meeting timing should  be minimum 30 minutes
-        if (!timeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(timeSlot.getStartTime())) {
-            throw new IllegalArgumentException("Minimum meeting time should be greater than 30 minus");
-        }
-        Room room = roomService.find(roomName);
-        Teams givenTeam = null;
-        timeSlot.addRoom(room);
-        Employee employee = employeeService.findById(employeeId);
-        timeSlot.setEmployee(employee);
-        if (teamid.isPresent()) {
-            givenTeam = teamService.find(teamid.get());
-            timeSlot.addTeam(givenTeam);
-        } else {
-            List<Teams> teams = employee.getTeams();
-            for (Teams team : teams) {
-                timeSlot.addTeam(team);
-            }
-        }
-        System.out.println(timeSlot);
-        System.out.println(timeSlot.getTeams());
-        System.out.println(timeSlot.getRooms());
-        if (!roomAvailable(room, timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime())) {
-            return "sorry room not available";
-        } else {
-            timeSlotService.save(timeSlot);
-            return "Meeting Booked Successfully";
-        }
+    public ResponseEntity<String> addMeeting(@RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName, @RequestParam Optional<Integer> teamid) {
+        String value=meetingScheduleService.addMeeting(timeSlot,employeeId,roomName,teamid);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 
-    /**
-     * Checks whether the room is available or not on the given date and time
-     *
-     * @param room
-     * @param date
-     * @param startTime
-     * @param endTime
-     * @return boolean
-     */
-    private boolean roomAvailable(Room room, LocalDate date, LocalTime startTime, LocalTime endTime) {
-        List<TimeSlot> timeSlots = timeSlotService.findRoomAvailableBasedOnTime(room, date, endTime, startTime);
-        System.out.print(timeSlots);
-        if (timeSlots.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
 
-
-    }
 
     /**
      * This endpoint create the meeting apart from teams
@@ -178,39 +140,22 @@ public class MeetingScheduleController {
      * @return String
      */
     @PostMapping("/create-meeting/{employees}/{employeeId}/{roomName}")
-    public String createNewTeam(@PathVariable List<Integer> employees, @RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName) {
-        Room room = roomService.find(roomName);
-        if (!timeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(timeSlot.getStartTime()) || (!roomAvailable(room, timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime()))) {
-            return "Minimum meeting time should be greater than 30 minus  or room is not available in given time";
-        }
-
-        timeSlot.addRoom(room);
-        Employee theEmployee = employeeService.findById(employeeId);
-        timeSlot.setEmployee(theEmployee);
-        Teams newTeam = new Teams("Temporary Team", employees.size());
-        for (int i : employees) {
-            Employee employee = employeeService.findById(i);
-
-            newTeam.addEmployee(employee);
-        }
-        teamService.save(newTeam);
-        timeSlot.addTeam(newTeam);
-        timeSlotService.save(timeSlot);
-        return "new team is and meeting is scheduled successfully";
+    public ResponseEntity<String> createNewTeam(@PathVariable List<Integer> employees, @RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName) {
+       String value= meetingScheduleService.createNewTeam(employees,timeSlot,employeeId,roomName);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
+
+
+
 
     @DeleteMapping("/delete-meeting")
-    public String deleteMeeting(@RequestParam int id) {
-        TimeSlot timeSlot = timeSlotService.find(id);
-        LocalTime meetingBookedTime = timeSlot.getStartTime();
-        LocalTime localTime = LocalTime.now();
-        if (localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))) {
-            timeSlotService.delete(id);
-            return "TimeSlot is deleted successfully";
-        } else {
-            return "Can't delete the meeting at this moment";
-        }
+    public ResponseEntity<String> deleteMeeting(@RequestParam int id) {
+        String value= meetingScheduleService.deleteMeeting(id);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
+
+
+
 
     /**
      * This endpoint update the meeting date and time  based on the availability
@@ -220,19 +165,13 @@ public class MeetingScheduleController {
      * @return String
      */
     @PutMapping("/edit-meeting")
-    public String updateMeeting(@RequestBody TimeSlot timeSlot, @RequestParam int id) {
-
-        TimeSlot theTimeSlot = timeSlotService.find(id);
-        List<Room> room = theTimeSlot.getRooms();
-        if (!roomAvailable(room.get(0), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime())) {
-            return "This Room is already booked in this timing";
-        } else {
-            theTimeSlot.setStartTime(timeSlot.getStartTime());
-            theTimeSlot.setEndTime(timeSlot.getEndTime());
-            timeSlotService.save(theTimeSlot);
-            return "meeting timing is updated";
-        }
+    public  ResponseEntity<String> updateMeeting(@RequestBody TimeSlot timeSlot, @RequestParam int id) {
+        String value=meetingScheduleService.updateMeeting(timeSlot,id);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
+
+
+
 
     /**
      * This endpoint update the meeting description
@@ -242,12 +181,13 @@ public class MeetingScheduleController {
      * @return String
      */
     @PutMapping("edit-meeting/{timeslotId}")
-    public String updateMeetingDescription(@RequestParam String description, @PathVariable int timeslotId) {
-        TimeSlot timeSlot = timeSlotService.find(timeslotId);
-        timeSlot.setDescription(description);
-        timeSlotService.save(timeSlot);
-        return "Description updated Successfully";
+    public  ResponseEntity<String> updateMeetingDescription(@RequestParam String description, @PathVariable int timeslotId) {
+        String value= meetingScheduleService.updateMeetingDescription(description,timeslotId);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
+
+
+
 
     /**
      * This endpoint add an employee to a meeting
@@ -257,28 +197,13 @@ public class MeetingScheduleController {
      * @return String
      */
     @PutMapping("/edit-meeting/{timeslotId}/{employeeid}")
-    public String updateMeetingAddEmployee(@PathVariable int timeslotId, @PathVariable int employeeid) {
-
-        TimeSlot timeSlot = timeSlotService.find(timeslotId);
-        Employee theEmployee = employeeService.findById(employeeid);
-
-        List<Teams> teams = timeSlot.getTeams();
-        List<Employee> employees = new ArrayList<>();
-        for (Teams team : teams) {
-            System.out.print(team);
-            employees.addAll(team.getEmployees());
-            team.setTimeSlots(null);
-        }
-        Teams newTeam = new Teams("edited team", employees.size() + 1);
-        newTeam.addEmployee(theEmployee);
-        for (Employee employee : employees) {
-            newTeam.addEmployee(employee);
-        }
-        newTeam.addTimeSlot(timeSlot);
-        teamService.save(newTeam);
-        return "Employee has been added to the new meeting";
-
+    public  ResponseEntity<String> updateMeetingAddEmployee(@PathVariable int timeslotId, @PathVariable int employeeid) {
+        String value= meetingScheduleService.updateMeetingAddEmployee(timeslotId,employeeid);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
+
+
+
 
     /**
      * This endpoint remove an employee to a meeting
@@ -287,25 +212,11 @@ public class MeetingScheduleController {
      * @param employeeid id of employee needed to be removed
      * @return void
      */
+
     @PutMapping("/edit-meeting/remove/{timeslotId}/{employeeid}")
-    public void updateMeetingRemoveEmployee(@PathVariable int timeslotId, @PathVariable int employeeid) {
-        TimeSlot timeSlot = timeSlotService.find(timeslotId);
-        List<Teams> teams = timeSlot.getTeams();
-        List<Employee> employees = new ArrayList<>();
-        for (Teams team : teams) {
-            System.out.print(team);
-            employees.addAll(team.getEmployees());
-            team.setTimeSlots(null);
-        }
-        Teams newTeam = new Teams("edited team", employees.size() - 1);
-        for (Employee employee : employees) {
-            if (employee.getEmployeeId() == employeeid) {
-                continue;
-            }
-            newTeam.addEmployee(employee);
-        }
-        newTeam.addTimeSlot(timeSlot);
-        teamService.save(newTeam);
+    public ResponseEntity<String> updateMeetingRemoveEmployee(@PathVariable int timeslotId, @PathVariable int employeeid) {
+        String value= meetingScheduleService.updateMeetingRemoveEmployee(timeslotId,employeeid);
+        return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 
 

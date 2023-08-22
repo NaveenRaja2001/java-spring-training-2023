@@ -1,43 +1,33 @@
-package com.example.meetingscheduler.controller;
+package com.example.meetingscheduler.service;
 
 import com.example.meetingscheduler.entity.Employee;
 import com.example.meetingscheduler.entity.Room;
 import com.example.meetingscheduler.entity.Teams;
 import com.example.meetingscheduler.entity.TimeSlot;
 import com.example.meetingscheduler.projection.TimeSlotView;
+import com.example.meetingscheduler.repository.RoomRepository;
+import com.example.meetingscheduler.repository.TeamsRepository;
+import com.example.meetingscheduler.repository.TimeSlotRepository;
 import com.example.meetingscheduler.responseObject.TimeSlotResponse;
-import com.example.meetingscheduler.service.EmployeeService;
-import com.example.meetingscheduler.service.RoomService;
-import com.example.meetingscheduler.service.TeamService;
-import com.example.meetingscheduler.service.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+@Service
+public class FindAvailabilityServiceImpl implements FindAvailabilityService {
+    private TimeSlotRepository timeSlotRepository;
+    private RoomRepository roomRepository;
 
-/**
- *
- */
-@RestController
-@RequestMapping("meeting-schedule")
-public class FindAvailabliltyController {
-
-    TimeSlotService timeSlotService;
-    RoomService roomService;
-    EmployeeService employeeService;
-    TeamService teamService;
+    private TeamsRepository teamsRepository;
 
     @Autowired
-    public FindAvailabliltyController(TimeSlotService timeSlotService, RoomService roomService, EmployeeService employeeService, TeamService teamService) {
-        this.timeSlotService = timeSlotService;
-        this.roomService = roomService;
-        this.employeeService = employeeService;
-        this.teamService = teamService;
+    public FindAvailabilityServiceImpl(TimeSlotRepository timeSlotRepository, RoomRepository roomRepository, TeamsRepository teamsRepository) {
+        this.timeSlotRepository = timeSlotRepository;
+        this.roomRepository = roomRepository;
+        this.teamsRepository = teamsRepository;
     }
 
     /**
@@ -48,10 +38,10 @@ public class FindAvailabliltyController {
      * @param teamCount
      * @return
      */
-    @GetMapping("/findrooms")
-    public Map<String, Integer> availableRoomsBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam Optional<Integer> teamId, @RequestParam Optional<Integer> teamCount) {
+    @Override
+    public Map<String, Integer> availableRoomsBasedOnDateAndTime(TimeSlot theTimeSlot, Optional<Integer> teamId, Optional<Integer> teamCount) {
         LocalDate date1 = theTimeSlot.getDate();
-        List<TimeSlotView> timeSlots = timeSlotService.findTimeSlotIdByDate(date1);
+        List<TimeSlotView> timeSlots = timeSlotRepository.findTimeSlotByDate(date1);
         List<TimeSlotResponse> timeSlotResponses = new ArrayList<>();
         List<Room> bookedRoom = new ArrayList<>();
         List<Integer> roomId = new ArrayList<>();
@@ -64,7 +54,7 @@ public class FindAvailabliltyController {
             }
         }
         HashMap<String, Integer> availableRoomNames = new HashMap();
-        List<Room> avaliableRoom = roomService.findAll();
+        List<Room> avaliableRoom = roomRepository.findAll();
         avaliableRoom.removeAll(bookedRoom);
         for (Room room : avaliableRoom) {
             availableRoomNames.put(room.getRoomName(), room.getRoomCapacity());
@@ -74,7 +64,8 @@ public class FindAvailabliltyController {
         if (teamId.isPresent() || teamCount.isPresent()) {
             int teamSize = 0;
             if (teamId.isPresent()) {
-                Teams teams = teamService.find(teamId.get());
+                int value = teamId.get();
+                Teams teams = teamsRepository.findById(value);
                 teamSize = teams.getTeamCount();
             } else {
                 teamSize = teamCount.get();
@@ -94,14 +85,14 @@ public class FindAvailabliltyController {
         return sortedAvailableRoom;
     }
 
-
     /**
      * This method sorts the hashmap based on the value
      *
      * @param array
      * @return Sorted Hashmap
      */
-    public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> array) {
+    @Override
+    public HashMap<String, Integer> sortByValue(HashMap<String, Integer> array) {
         List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(array.entrySet());
         Collections.sort(list, (i1, i2) -> i1.getValue().compareTo(i2.getValue()));
         HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
@@ -112,15 +103,15 @@ public class FindAvailabliltyController {
     }
 
     /**
-     * Find the availability of the employee in tema
+     * This method return the available employees  based on dateAndTime
      *
      * @param theTimeSlot
      * @param teamId
      * @return
      */
-    @GetMapping("/findemployees")
-    public HashMap<Integer, Boolean> availableEmployeesBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam int teamId) {
-        Teams team = teamService.find(teamId);
+    @Override
+    public HashMap<Integer, Boolean> availableEmployeesBasedOnDateAndTime(TimeSlot theTimeSlot, int teamId) {
+        Teams team = teamsRepository.findById(teamId);
         List<Employee> employees = team.getEmployees();
         HashMap<Integer, Boolean> availableEmployeeStatus = new HashMap<>();
         for (Employee employee : employees) {
@@ -130,12 +121,13 @@ public class FindAvailabliltyController {
     }
 
     /**
-     * Find the availability of individual employee
+     * This method return the available individual employee  based on dateAndTime
      *
      * @param theTimeSlot
      * @param employee
      * @return
      */
+    @Override
     public boolean availableEmployeeBasedOnDateAndTime(TimeSlot theTimeSlot, Employee employee) {
         LocalDate date = theTimeSlot.getDate();
         LocalTime tempStartTime = theTimeSlot.getStartTime();
@@ -157,5 +149,7 @@ public class FindAvailabliltyController {
         }
         return true;
 
+
     }
+
 }
