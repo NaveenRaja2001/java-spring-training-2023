@@ -8,6 +8,9 @@ import com.example.meetingscheduler.repository.EmployeeRepository;
 import com.example.meetingscheduler.repository.RoomRepository;
 import com.example.meetingscheduler.repository.TeamsRepository;
 import com.example.meetingscheduler.repository.TimeSlotRepository;
+import com.example.meetingscheduler.responseObject.RoomsResponse;
+import com.example.meetingscheduler.responseObject.TeamsResponse;
+import com.example.meetingscheduler.responseObject.TimeSlotResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MeetingScheduleServiceTest {
     @InjectMocks
-    MeetingScheduleService meetingScheduleService;
+    MeetingScheduleServiceImpl meetingScheduleService;
 
     @Mock
     RoomRepository roomRepository;
@@ -60,7 +63,7 @@ class MeetingScheduleServiceTest {
     }
 
     @Test
-    void createNewTeam() {
+    void createNewTeam() throws Exception {
         Employee e1 = new Employee("Naveen", "N", "nav@gmail.com");
         Employee e2 = new Employee("hari", "S", "hari@gmail.com");
         Employee e5 = new Employee("palani", "P", "palani@gmail.com");
@@ -75,9 +78,15 @@ class MeetingScheduleServiceTest {
         when(employeeRepository.findById(9)).thenReturn(e9);
         when(timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(r6, LocalDate.parse("2023-08-15"), LocalTime.parse("23:46:00"), LocalTime.parse("22:15:45"))).thenReturn(new ArrayList<TimeSlot>());
         TimeSlot theTimeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "hai apart from team");
-        String response = meetingScheduleService.createNewTeam(List.of(1, 2, 5, 9), theTimeSlot, 6, "London");
+        TimeSlotResponse response = meetingScheduleService.createNewTeam(List.of(1, 2, 5, 9), theTimeSlot, 6, "London");
+TimeSlotResponse expectedResponse=new TimeSlotResponse(0,"hai apart from team",LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"));
 
-        assertEquals(response, "New team is and meeting is scheduled successfully");
+        RoomsResponse roomsResponse=new RoomsResponse(0,"London",5);
+        TeamsResponse teamsResponse=new TeamsResponse(0,4,"Temporary Team");
+        expectedResponse.setTeams(List.of(teamsResponse));
+        expectedResponse.setRooms(List.of(roomsResponse));
+        System.out.print(expectedResponse.getTeams());
+        assertEquals(response,expectedResponse);
     }
 
     @Test

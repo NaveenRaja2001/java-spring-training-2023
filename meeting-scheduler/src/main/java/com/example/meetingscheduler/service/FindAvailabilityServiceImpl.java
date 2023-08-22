@@ -127,6 +127,7 @@ public class FindAvailabilityServiceImpl implements FindAvailabilityService {
      * @param employee
      * @return
      */
+
     @Override
     public boolean availableEmployeeBasedOnDateAndTime(TimeSlot theTimeSlot, Employee employee) {
         LocalDate date = theTimeSlot.getDate();

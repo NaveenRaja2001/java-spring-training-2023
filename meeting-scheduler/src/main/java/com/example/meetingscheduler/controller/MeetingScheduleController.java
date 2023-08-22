@@ -5,6 +5,7 @@ import com.example.meetingscheduler.entity.Room;
 import com.example.meetingscheduler.entity.Teams;
 import com.example.meetingscheduler.entity.TimeSlot;
 import com.example.meetingscheduler.repository.TimeSlotRepository;
+import com.example.meetingscheduler.responseObject.TimeSlotResponse;
 import com.example.meetingscheduler.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/team")
 public class MeetingScheduleController {
+    @Autowired
     private TeamService teamService;
     private RoomService roomService;
     private TimeSlotService timeSlotService;
@@ -31,9 +33,10 @@ public class MeetingScheduleController {
 
 
    private TimeSlotRepository timeSlotRepository;
+
 @Autowired
-    public MeetingScheduleController(TeamService teamService, RoomService roomService, TimeSlotService timeSlotService, EmployeeService employeeService, MeetingScheduleServiceImpl meetingScheduleService, TimeSlotRepository timeSlotRepository) {
-        this.teamService = teamService;
+    public MeetingScheduleController( RoomService roomService, TimeSlotService timeSlotService, EmployeeService employeeService, MeetingScheduleServiceImpl meetingScheduleService, TimeSlotRepository timeSlotRepository) {
+//        this.teamService = teamService;
         this.roomService = roomService;
         this.timeSlotService = timeSlotService;
         this.employeeService = employeeService;
@@ -140,8 +143,8 @@ public class MeetingScheduleController {
      * @return String
      */
     @PostMapping("/create-meeting/{employees}/{employeeId}/{roomName}")
-    public ResponseEntity<String> createNewTeam(@PathVariable List<Integer> employees, @RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName) {
-       String value= meetingScheduleService.createNewTeam(employees,timeSlot,employeeId,roomName);
+    public ResponseEntity<TimeSlotResponse> createNewTeam(@PathVariable List<Integer> employees, @RequestBody TimeSlot timeSlot, @PathVariable int employeeId, @PathVariable String roomName) throws Exception {
+        TimeSlotResponse value= meetingScheduleService.createNewTeam(employees,timeSlot,employeeId,roomName);
         return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 

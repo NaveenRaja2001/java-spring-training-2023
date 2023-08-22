@@ -2,6 +2,7 @@ package com.example.meetingscheduler.service;
 
 import com.example.meetingscheduler.entity.Room;
 import com.example.meetingscheduler.entity.TimeSlot;
+import com.example.meetingscheduler.responseObject.TimeSlotResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +15,7 @@ public interface MeetingScheduleService{
 
     boolean roomAvailable(Room room, LocalDate date, LocalTime startTime, LocalTime endTime);
 
-    String createNewTeam(List<Integer> employees, TimeSlot timeSlot, int employeeId, String roomName);
+    TimeSlotResponse createNewTeam(List<Integer> employees, TimeSlot timeSlot, int employeeId, String roomName) throws Exception;
 
     String deleteMeeting(int id);
 

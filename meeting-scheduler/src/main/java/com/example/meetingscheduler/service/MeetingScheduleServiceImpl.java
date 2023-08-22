@@ -8,6 +8,9 @@ import com.example.meetingscheduler.repository.EmployeeRepository;
 import com.example.meetingscheduler.repository.RoomRepository;
 import com.example.meetingscheduler.repository.TeamsRepository;
 import com.example.meetingscheduler.repository.TimeSlotRepository;
+import com.example.meetingscheduler.responseObject.RoomsResponse;
+import com.example.meetingscheduler.responseObject.TeamsResponse;
+import com.example.meetingscheduler.responseObject.TimeSlotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,10 +96,10 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
     }
 
     @Override
-    public String createNewTeam(List<Integer> employees, TimeSlot timeSlot, int employeeId, String roomName) {
+    public TimeSlotResponse createNewTeam(List<Integer> employees, TimeSlot timeSlot, int employeeId, String roomName) throws Exception {
         Room room = roomRepository.findByroomName(roomName);
         if (!timeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(timeSlot.getStartTime()) || (!roomAvailable(room, timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime()))) {
-            return "Minimum meeting time should be greater than 30 minus  or room is not available in given time";
+            throw new Exception("Minimum meeting time should be greater than 30 minus  or room is not available in given time");
         }
 
         timeSlot.addRoom(room);
@@ -112,7 +115,12 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
         teamsRepository.save(newTeam);
         timeSlot.addTeam(newTeam);
         timeSlotRepository.save(timeSlot);
-        return "New team is and meeting is scheduled successfully";
+        TimeSlotResponse timeSlotResponse=new TimeSlotResponse(timeSlot.getTimeSlotId(),timeSlot.getDescription(),timeSlot.getDate(),timeSlot.getStartTime(),timeSlot.getEndTime());
+        RoomsResponse roomsResponse=new RoomsResponse(room.getRoomId(),room.getRoomName(),room.getRoomCapacity());
+        TeamsResponse teamsResponse=new TeamsResponse(newTeam.getTeamId(),newTeam.getTeamCount(),newTeam.getTeamName());
+        timeSlotResponse.setRooms(List.of(roomsResponse));
+        timeSlotResponse.setTeams(List.of(teamsResponse));
+        return timeSlotResponse;
     }
 
     @Override
