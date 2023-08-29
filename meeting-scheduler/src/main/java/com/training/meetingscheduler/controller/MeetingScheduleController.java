@@ -165,32 +165,6 @@ public class MeetingScheduleController {
     }
 
     /**
-     * **
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
-
-
-    /**
      * This endpoint update the meeting date and time  based on the availability
      *
      * @param timeSlot contains date ,startTime, EndTime and Description which need to be updated
@@ -203,9 +177,6 @@ public class MeetingScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(value);
     }
 
-
-
-
     /**
      * This endpoint update the meeting description
      *
@@ -213,25 +184,11 @@ public class MeetingScheduleController {
      * @param timeslotId  contain id of the meeting which needed to be updated
      * @return String
      */
-    @PatchMapping("")
-    public  ResponseEntity<String> updateMeetingDescription(@RequestParam String description, @RequestParam int timeslotId) {
-        String value= meetingScheduleService.updateMeetingDescription(description,timeslotId);
-        return ResponseEntity.status(HttpStatus.OK).body(value);
-    }
-
-
-    /**
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     */
+//    @PatchMapping("")
+//    public  ResponseEntity<String> updateMeetingDescription(@RequestParam String description, @RequestParam int timeslotId) {
+//        String value= meetingScheduleService.updateMeetingDescription(description,timeslotId);
+//        return ResponseEntity.status(HttpStatus.OK).body(value);
+//    }
 
     /**
      * This endpoint add an employee to a meeting

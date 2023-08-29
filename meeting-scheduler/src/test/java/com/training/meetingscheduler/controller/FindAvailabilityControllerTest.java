@@ -16,8 +16,7 @@ import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 
@@ -33,15 +32,21 @@ class FindAvailabilityControllerTest {
 
     @Test
     void availableRoomsBasedOnDateAndTime() {
+
         TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "hai apart from team");
-        when(findAvailabilityService.availableRoomsBasedOnDateAndTime(any(), any(),any())).thenReturn(Map.of("Chennai",4));
-        ResponseEntity<Map<String, Integer>>  response = findAvailabilityController.availableRoomsBasedOnDateAndTime(timeSlot, Optional.of(1),Optional.empty());
-        assertEquals(response.getBody(),Map.of("Chennai",4) );
+        when(findAvailabilityService.availableRoomsBasedOnDateAndTime(timeSlot, Optional.of(4))).thenReturn(Map.of("Chennai", 4));
+        ResponseEntity<Map<String, Integer>> response = findAvailabilityController.availableRoomsBasedOnDateAndTime(timeSlot, Optional.of(4));
+        assertEquals(response.getBody(), Map.of("Chennai", 4));
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
 
     }
 
     @Test
     void availableEmployeesBasedOnDateAndTime() {
+        TimeSlot timeSlot = new TimeSlot(LocalDate.parse("2023-08-15"), LocalTime.parse("22:15:45"), LocalTime.parse("23:46:00"), "hai apart from team");
+        when(findAvailabilityService.availableEmployeesBasedOnDateAndTime(timeSlot, 4)).thenReturn(Map.of(1, true));
+        ResponseEntity<Map<Integer, Boolean>> response = findAvailabilityController.availableEmployeesBasedOnDateAndTime(timeSlot, 4);
+        assertEquals(response.getBody(), Map.of(1, true));
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 }

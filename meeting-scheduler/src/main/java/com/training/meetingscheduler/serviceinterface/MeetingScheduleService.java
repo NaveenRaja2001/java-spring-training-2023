@@ -22,7 +22,7 @@ public interface MeetingScheduleService{
 
     TimeSlotResponse updateMeeting(TimeSlot timeSlot, int id);
 
-    String updateMeetingDescription(String description, int timeslotId);
+    TimeSlotResponse updateMeetingDescription(TimeSlot theTimeSlot,TimeSlot timeSlot,TimeSlotResponse timeSlotResponse);
 
     TimeSlotResponse updateMeetingAddEmployee(int timeslotId, int employeeid);
 

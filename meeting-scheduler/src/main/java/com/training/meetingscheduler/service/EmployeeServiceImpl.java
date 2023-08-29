@@ -6,6 +6,8 @@ import com.training.meetingscheduler.serviceinterface.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -13,7 +15,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Override
-    public Employee findById(int id) {
+    public Optional<Employee> findById(int id) {
         return employeeRepository.findById(id);
     }
 

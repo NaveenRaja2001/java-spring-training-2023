@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -54,43 +56,40 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
      */
     @Override
     public TimeSlotResponse addMeeting(TimeSlot reqTimeSlot, int employeeId, String reqRoomName, Optional<Integer> reqTeamId) {
-        //meeting timing should  be minimum 30 minutes
-        if (!reqTimeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(reqTimeSlot.getStartTime())) {
-            throw new MeetingScheduleException("Minimum meeting time should be greater than 30 minus");
-        }
-        Room room = roomRepository.findByroomName(reqRoomName);
-        Teams givenTeam = null;
+        TimeSlotResponse timeSlotResponse = null;
+        Optional<Teams> givenTeam = null;
         int value = 0;
-        reqTimeSlot.addRoom(room);
-        Employee employee = employeeRepository.findById(employeeId);
-        reqTimeSlot.setEmployee(employee);
-        TimeSlotResponse timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
-        if (reqTeamId.isPresent()) {
-            value = reqTeamId.get();
-            givenTeam = teamsRepository.findById(value);
-            reqTimeSlot.addTeam(givenTeam);
-            TeamsResponse teamsResponse = new TeamsResponse(value, givenTeam.getTeamCount(), givenTeam.getTeamName());
-            timeSlotResponse.setTeams(List.of(teamsResponse));
-        } else {
-            List<Teams> teams = employee.getTeams();
-            teams.stream().forEach(team -> {
-                reqTimeSlot.addTeam(team);
-                timeSlotResponse.setTeams(List.of(new TeamsResponse(team.getTeamId(), team.getTeamCount(), team.getTeamName())));
-            });
-
-//            for (Teams team : teams) {
-//                reqTimeSlot.addTeam(team);
-//                timeSlotResponse.setTeams(List.of(new TeamsResponse(team.getTeamId(), team.getTeamCount(), team.getTeamName())));
-//            }
-        }
-        if (!roomAvailable(room, reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime())) {
-            throw new MeetingScheduleException("sorry room is not available");
-        } else {
+        try {
+            Room room = roomRepository.findByroomName(reqRoomName);
+            //meeting timing should  be minimum 30 minutes
+            //check the room is available or not
+            if (!reqTimeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(reqTimeSlot.getStartTime()) || !roomAvailable(room, reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime())) {
+                throw new MeetingScheduleException("Minimum meeting time should be greater than 30 minus or room is occupied");
+            }
+            reqTimeSlot.addRoom(room);
+            Optional<Employee> employee = employeeRepository.findById(employeeId);
+            reqTimeSlot.setEmployee(employee.get());
+            timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
+            if (reqTeamId.isPresent()) {
+                value = reqTeamId.get();
+                givenTeam = teamsRepository.findById(value);
+                reqTimeSlot.addTeam(givenTeam.get());
+                TeamsResponse teamsResponse = new TeamsResponse(value, givenTeam.get().getTeamCount(), givenTeam.get().getTeamName());
+                timeSlotResponse.setTeams(List.of(teamsResponse));
+            } else {
+                List<Teams> teams = employee.get().getTeams();
+                List<TeamsResponse> teamsResponses = teams.stream().map(team -> {
+                    reqTimeSlot.addTeam(team);
+                    return new TeamsResponse(team.getTeamId(), team.getTeamCount(), team.getTeamName());
+                }).collect(Collectors.toList());
+            }
             timeSlotRepository.save(reqTimeSlot);
             RoomsResponse roomsResponse = new RoomsResponse(room.getRoomId(), room.getRoomName(), room.getRoomCapacity());
             timeSlotResponse.setRooms(List.of(roomsResponse));
-            return timeSlotResponse;
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
+        return timeSlotResponse;
     }
 
     /**
@@ -105,15 +104,12 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
     @Override
     public boolean roomAvailable(Room room, LocalDate date, LocalTime startTime, LocalTime endTime) {
         List<TimeSlot> timeSlots = timeSlotRepository.findByRoomsAndDateAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(room, date, endTime, startTime);
-
         System.out.print(timeSlots);
         if (timeSlots.isEmpty()) {
             return true;
         } else {
             return false;
         }
-
-
     }
 
 
@@ -127,29 +123,35 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
      */
     @Override
     public TimeSlotResponse addMeeting(CollaborationRequest collaborationRequest, int employeeId, String roomName) {
-        TimeSlot reqTimeSlot = new TimeSlot(collaborationRequest.getLocalDate(), collaborationRequest.getStartTime(), collaborationRequest.getEndTime(), collaborationRequest.getDescription());
-        Room room = roomRepository.findByroomName(roomName);
-        if (!reqTimeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(reqTimeSlot.getStartTime()) || (!roomAvailable(room, reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime()))) {
-            throw new MeetingScheduleException("Minimum meeting time should be greater than 30 minus  or room is not available in given time");
-        }
+        TimeSlotResponse timeSlotResponse = null;
+        try {
 
-        reqTimeSlot.addRoom(room);
-        Employee theEmployee = employeeRepository.findById(employeeId);
-        reqTimeSlot.setEmployee(theEmployee);
-        Teams newTeam = new Teams("Temporary Team", collaborationRequest.getEmployeeList().size());
-        newTeam.addEmployee(theEmployee);
-        for (int i : collaborationRequest.getEmployeeList()) {
-            Employee employee = employeeRepository.findById(i);
-            newTeam.addEmployee(employee);
+            TimeSlot reqTimeSlot = new TimeSlot(collaborationRequest.getLocalDate(), collaborationRequest.getStartTime(), collaborationRequest.getEndTime(), collaborationRequest.getDescription());
+            Room room = roomRepository.findByroomName(roomName);
+            if (!reqTimeSlot.getEndTime().minus(30, ChronoUnit.MINUTES).isAfter(reqTimeSlot.getStartTime()) || (!roomAvailable(room, reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime()))) {
+                throw new MeetingScheduleException("Minimum meeting time should be greater than 30 minus  or room is not available in given time");
+            }
+
+            reqTimeSlot.addRoom(room);
+            Optional<Employee> theEmployee = employeeRepository.findById(employeeId);
+            reqTimeSlot.setEmployee(theEmployee.get());
+            Teams newTeam = new Teams("Temporary Team", collaborationRequest.getEmployeeList().size());
+            newTeam.addEmployee(theEmployee.get());
+            for (int i : collaborationRequest.getEmployeeList()) {
+                Optional<Employee> employee = employeeRepository.findById(i);
+                newTeam.addEmployee(employee.get());
+            }
+            teamsRepository.save(newTeam);
+            reqTimeSlot.addTeam(newTeam);
+            timeSlotRepository.save(reqTimeSlot);
+            timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
+            RoomsResponse roomsResponse = new RoomsResponse(room.getRoomId(), room.getRoomName(), room.getRoomCapacity());
+            TeamsResponse teamsResponse = new TeamsResponse(newTeam.getTeamId(), newTeam.getTeamCount(), newTeam.getTeamName());
+            timeSlotResponse.setRooms(List.of(roomsResponse));
+            timeSlotResponse.setTeams(List.of(teamsResponse));
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-        teamsRepository.save(newTeam);
-        reqTimeSlot.addTeam(newTeam);
-        timeSlotRepository.save(reqTimeSlot);
-        TimeSlotResponse timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
-        RoomsResponse roomsResponse = new RoomsResponse(room.getRoomId(), room.getRoomName(), room.getRoomCapacity());
-        TeamsResponse teamsResponse = new TeamsResponse(newTeam.getTeamId(), newTeam.getTeamCount(), newTeam.getTeamName());
-        timeSlotResponse.setRooms(List.of(roomsResponse));
-        timeSlotResponse.setTeams(List.of(teamsResponse));
         return timeSlotResponse;
     }
 
@@ -161,24 +163,22 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
      */
     @Override
     public TimeSlotResponse deleteMeeting(int id) {
-
-        TimeSlot reqTimeSlot = timeSlotRepository.findById(id);
-        if (reqTimeSlot == null) {
-            throw new MeetingScheduleException("TimeSlot Id Invalid");
+        TimeSlotResponse timeSlotResponse = null;
+        try {
+            TimeSlot reqTimeSlot = timeSlotRepository.findById(id).orElseThrow(() -> new MeetingScheduleException("TimeSlot Id is Invalid"));
+            LocalTime meetingBookedTime = reqTimeSlot.getStartTime();
+            LocalTime localTime = LocalTime.now();
+            LocalDate localDate = LocalDate.now();
+            if (!((localDate.isBefore(reqTimeSlot.getDate())) || (localDate.equals(reqTimeSlot.getDate()) && localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))))) {
+                throw new MeetingScheduleException("Oops Time Passed....Can't delete the meeting at this moment");
+            } else {
+                timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
+                timeSlotRepository.deleteById(id);
+            }
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-        LocalTime meetingBookedTime = reqTimeSlot.getStartTime();
-        LocalTime localTime = LocalTime.now();
-        LocalDate localDate = LocalDate.now();
-        if (!((localDate.isBefore(reqTimeSlot.getDate())) ||
-                (localDate.equals(reqTimeSlot.getDate())
-                        && localTime.isBefore(meetingBookedTime.minus(30, ChronoUnit.MINUTES))))) {
-            throw new MeetingScheduleException("Oops Time Passed....Can't delete the meeting at this moment");
-
-        } else {
-            TimeSlotResponse timeSlotResponse = new TimeSlotResponse(reqTimeSlot.getTimeSlotId(), reqTimeSlot.getDescription(), reqTimeSlot.getDate(), reqTimeSlot.getStartTime(), reqTimeSlot.getEndTime());
-            timeSlotRepository.deleteById(id);
-            return timeSlotResponse;
-        }
+        return timeSlotResponse;
     }
 
     /**
@@ -191,9 +191,43 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
     @Override
     public TimeSlotResponse updateMeeting(TimeSlot timeSlot, int id) {
         TimeSlotResponse timeSlotResponse = new TimeSlotResponse();
-        TimeSlot theTimeSlot = timeSlotRepository.findById(id);
-        List<Room> room = theTimeSlot.getRooms();
-        if (timeSlot.getDate() == null) {
+        try {
+            TimeSlot theTimeSlot = timeSlotRepository.findById(id).orElseThrow(() -> new MeetingScheduleException("TimeSlot Id is Invalid"));
+            List<Room> room = theTimeSlot.getRooms();
+            if (timeSlot.getDate() == null) {
+                return updateMeetingDescription(theTimeSlot, timeSlot, timeSlotResponse);
+            }
+            if (!roomAvailable(room.get(0), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime())) {
+                throw new MeetingScheduleException("This Room is already booked in this timing");
+            } else {
+                theTimeSlot.setStartTime(timeSlot.getStartTime());
+                theTimeSlot.setEndTime(timeSlot.getEndTime());
+                theTimeSlot.setDescription(timeSlot.getDescription());
+                timeSlotRepository.save(theTimeSlot);
+                timeSlotResponse.setGetTimeSlotId(theTimeSlot.getTimeSlotId());
+                timeSlotResponse.setStartTime(theTimeSlot.getStartTime());
+                timeSlotResponse.setEndTime(theTimeSlot.getEndTime());
+                timeSlotResponse.setGetDescription(theTimeSlot.getDescription());
+                timeSlotResponse.setLocalDate(theTimeSlot.getDate());
+
+            }
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
+        }
+        return timeSlotResponse;
+    }
+
+    /**
+     * this method update the description
+     *
+     * @param theTimeSlot
+     * @param timeSlot
+     * @param timeSlotResponse
+     * @return
+     */
+    @Override
+    public TimeSlotResponse updateMeetingDescription(TimeSlot theTimeSlot, TimeSlot timeSlot, TimeSlotResponse timeSlotResponse) {
+        try {
             theTimeSlot.setDescription(timeSlot.getDescription());
             timeSlotResponse.setGetTimeSlotId(theTimeSlot.getTimeSlotId());
             timeSlotResponse.setStartTime(theTimeSlot.getStartTime());
@@ -202,37 +236,9 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
             timeSlotResponse.setGetDescription(timeSlot.getDescription());
             timeSlotRepository.save(theTimeSlot);
             return timeSlotResponse;
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-        if (!roomAvailable(room.get(0), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime())) {
-            throw new MeetingScheduleException("This Room is already booked in this timing");
-        } else {
-            theTimeSlot.setStartTime(timeSlot.getStartTime());
-            theTimeSlot.setEndTime(timeSlot.getEndTime());
-            theTimeSlot.setDescription(timeSlot.getDescription());
-            timeSlotRepository.save(theTimeSlot);
-            timeSlotResponse.setGetTimeSlotId(theTimeSlot.getTimeSlotId());
-            timeSlotResponse.setStartTime(theTimeSlot.getStartTime());
-            timeSlotResponse.setEndTime(theTimeSlot.getEndTime());
-            timeSlotResponse.setGetDescription(theTimeSlot.getDescription());
-            timeSlotResponse.setLocalDate(theTimeSlot.getDate());
-            return timeSlotResponse;
-        }
-    }
-
-    /**
-     * This method edit the description of the meeting
-     *
-     * @param description
-     * @param timeslotId
-     * @return String
-     */
-    @Override
-    public String updateMeetingDescription(String description, int timeslotId) {
-
-        TimeSlot timeSlot = timeSlotRepository.findById(timeslotId);
-        timeSlot.setDescription(description);
-        timeSlotRepository.save(timeSlot);
-        return "Description updated Successfully";
     }
 
 
@@ -245,42 +251,32 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
      */
     @Override
     public TimeSlotResponse updateMeetingAddEmployee(int timeslotId, int employeeId) {
-        TimeSlot timeSlot = timeSlotRepository.findById(timeslotId);
-        Employee theEmployee = employeeRepository.findById(employeeId);
-
-        if (timeSlot == null || theEmployee == null) {
-            throw new MeetingScheduleException("Invalid TimeSlot id or Employeed iD");
-        }
-        List<Teams> teams = timeSlot.getTeams();
-        List<Employee> employees = new ArrayList<>();
-        teams.stream().forEach(team -> {
-            employees.addAll(team.getEmployees());
-            team.setTimeSlots(null);
-        });
-//        for (Teams team : teams) {
-//            System.out.print(team);
-//            employees.addAll(team.getEmployees());
-//            team.setTimeSlots(null);
-//        }
-        Teams newTeam = new Teams("edited team", employees.size() + 1);
-        newTeam.addEmployee(theEmployee);
-        employees.stream().forEach(employee -> {
-            if (employee.getEmployeeId() == employeeId) {
+        TimeSlot timeSlot = null;
+        TimeSlotResponse timeSlotResponse = null;
+        try {
+            Employee theEmployee = employeeRepository.findById(employeeId).orElseThrow(() -> new MeetingScheduleException("Employee Id is Invalid"));
+            timeSlot = timeSlotRepository.findById(timeslotId).orElseThrow(() -> new MeetingScheduleException("TimeSlot Id is Invalid"));
+            List<Teams> teams = timeSlot.getTeams();
+            List<Employee> employees = teams.stream()
+                    .flatMap(team -> {
+                        team.setTimeSlots(null);
+                        return team.getEmployees().stream();
+                    })
+                    .collect(Collectors.toList());
+            Teams newTeam = new Teams("edited team", employees.size() + 1);
+            newTeam.addEmployee(theEmployee);
+            if (employees.stream().anyMatch(employee -> employee.getEmployeeId() == employeeId)) {
                 throw new MeetingScheduleException("Employee is already in the meeting");
             }
-            newTeam.addEmployee(employee);
-        });
-//        for (Employee employee : employees) {
-//            if(employee.getEmployeeId()==employeeId){
-//                throw new MeetingScheduleException("Employee is already in the meeting");
-//            }
-//            newTeam.addEmployee(employee);
-//        }
-        newTeam.addTimeSlot(timeSlot);
-        teamsRepository.save(newTeam);
-        TeamsResponse teamsResponse = new TeamsResponse(newTeam.getTeamId(), newTeam.getTeamCount(), newTeam.getTeamName());
-        TimeSlotResponse timeSlotResponse = new TimeSlotResponse(timeSlot.getTimeSlotId(), timeSlot.getDescription(), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime());
-        timeSlotResponse.setTeams(List.of(teamsResponse));
+            employees.forEach(newTeam::addEmployee);
+            newTeam.addTimeSlot(timeSlot);
+            teamsRepository.save(newTeam);
+            TeamsResponse teamsResponse = new TeamsResponse(newTeam.getTeamId(), newTeam.getTeamCount(), newTeam.getTeamName());
+            timeSlotResponse = new TimeSlotResponse(timeSlot.getTimeSlotId(), timeSlot.getDescription(), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime());
+            timeSlotResponse.setTeams(List.of(teamsResponse));
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
+        }
         return timeSlotResponse;
     }
 
@@ -293,34 +289,24 @@ public class MeetingScheduleServiceImpl implements MeetingScheduleService {
      */
     @Override
     public TimeSlotResponse updateMeetingRemoveEmployee(int timeslotId, int employeeId) {
-        TimeSlot timeSlot = timeSlotRepository.findById(timeslotId);
-        if (timeSlot == null) {
-            throw new MeetingScheduleException("Invalid TimeSlot id or Employeed iD");
+        Teams newTeam = null;
+        TimeSlot timeSlot = null;
+        try {
+            timeSlot = timeSlotRepository.findById(timeslotId).orElseThrow(() -> new MeetingScheduleException("TimeSlot Id is Invalid"));
+            List<Teams> teams = timeSlot.getTeams();
+            Set<Employee> reqEmployee= teams.stream()
+                    .flatMap(team -> {
+                        team.setTimeSlots(null);
+                        return team.getEmployees().stream();
+                    })
+                    .collect(Collectors.toSet());
+            newTeam = new Teams("edited team", reqEmployee.size() - 1);
+            reqEmployee.stream().filter(employee -> employee.getEmployeeId() != employeeId).forEach(newTeam::addEmployee);
+            newTeam.addTimeSlot(timeSlot);
+            teamsRepository.save(newTeam);
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-        List<Teams> teams = timeSlot.getTeams();
-        Set<Employee> reqEmployee = new HashSet<>();
-
-        teams.stream().forEach(team -> {
-            reqEmployee.addAll(team.getEmployees());
-            team.setTimeSlots(null);
-        });
-        if(!reqEmployee.contains(employeeRepository.findById(employeeId))){
-            throw new MeetingScheduleException("No employee Id found in the meeting");
-        }
-//        for (Teams team : teams) {
-//            reqEmployee.addAll(team.getEmployees());
-//            team.setTimeSlots(null);
-//        }
-        Teams newTeam = new Teams("edited team", reqEmployee.size() - 1);
-//        reqEmployee.stream().forEach(employee -> newTeam.addEmployee(employee));
-        for (Employee employee : reqEmployee) {
-            if(employee.getEmployeeId()==employeeId){
-                continue;
-            }
-            newTeam.addEmployee(employee);
-        }
-        newTeam.addTimeSlot(timeSlot);
-        teamsRepository.save(newTeam);
         TeamsResponse teamsResponse = new TeamsResponse(newTeam.getTeamId(), newTeam.getTeamCount(), newTeam.getTeamName());
         TimeSlotResponse timeSlotResponse = new TimeSlotResponse(timeSlot.getTimeSlotId(), timeSlot.getDescription(), timeSlot.getDate(), timeSlot.getStartTime(), timeSlot.getEndTime());
         timeSlotResponse.setTeams(List.of(teamsResponse));

@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TeamsRepository extends JpaRepository<Teams,Integer> {
- Teams findById(int id);
+// Teams findById(int id);
+
 }

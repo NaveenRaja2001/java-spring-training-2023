@@ -16,7 +16,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 /**
  * THIS SERVICE SHOWS THE AVAILABILITY  BASED ON DATE AND TIME
@@ -44,65 +53,35 @@ public class FindAvailabilityServiceImpl implements FindAvailabilityService {
      * @return
      */
     @Override
-    public Map<String, Integer> availableRoomsBasedOnDateAndTime(TimeSlot reqTimeSlot, Optional<Integer> teamId, Optional<Integer> teamCount) {
-        LocalDate reqDate = reqTimeSlot.getDate();
-        List<TimeSlotView> timeSlots = timeSlotRepository.findTimeSlotByDate(reqDate);
-        List<TimeSlotResponse> timeSlotResponses = new ArrayList<>();
+    public Map<String, Integer> availableRoomsBasedOnDateAndTime(TimeSlot reqTimeSlot, Optional<Integer> teamCount) {
+        HashMap<String, Integer> sortedAvailableRoom = null;
         List<Room> bookedRoom = new ArrayList<>();
         List<Integer> roomId = new ArrayList<>();
-        LocalTime reqStartTime = reqTimeSlot.getStartTime();
-        LocalTime reqEndTime = reqTimeSlot.getEndTime();
-        timeSlots.stream().forEach(timeSlot -> {
-            if ((reqStartTime.isAfter(timeSlot.getstartTime())
-                    && reqStartTime.isBefore(timeSlot.getendTime()))
-                    || (reqEndTime.isAfter(timeSlot.getstartTime())
-                    && reqEndTime.isBefore(timeSlot.getendTime()))) {
-                bookedRoom.addAll(timeSlot.getRooms());
-                timeSlotResponses.add(new TimeSlotResponse(timeSlot.getTimeSlotId(), timeSlot.getDescription(), timeSlot.getDate(), timeSlot.getstartTime(), timeSlot.getendTime()));
-            }
-        });
-//        for (TimeSlotView timeSlot : timeSlots) {
-//            if ((reqStartTime.isAfter(timeSlot.getstartTime())
-//                    && reqStartTime.isBefore(timeSlot.getendTime()))
-//                    || (reqEndTime.isAfter(timeSlot.getstartTime())
-//                    && reqEndTime.isBefore(timeSlot.getendTime()))) {
-//                bookedRoom.addAll(timeSlot.getRooms());
-//                timeSlotResponses.add(new TimeSlotResponse(timeSlot.getTimeSlotId(), timeSlot.getDescription(), timeSlot.getDate(), timeSlot.getstartTime(), timeSlot.getendTime()));
-//            }
-//        }
-        HashMap<String, Integer> availableRoomNames = new HashMap();
-        List<Room> availableRoom = roomRepository.findAll();
-        availableRoom.removeAll(bookedRoom);
-        availableRoom.stream().forEach(room -> {
-            availableRoomNames.put(room.getRoomName(), room.getRoomCapacity());
-        });
 
-//        for (Room room : availableRoom) {
-//            availableRoomNames.put(room.getRoomName(), room.getRoomCapacity());
-//        }
-        HashMap<String, Integer> sortedAvailableRoom = null;
-        sortedAvailableRoom = sortByValue(availableRoomNames);
-        if (teamId.isPresent() || teamCount.isPresent()) {
-            int teamSize = 0;
-            if (teamId.isPresent()) {
-                int value = teamId.get();
-                Teams teams = teamsRepository.findById(value);
-                teamSize = teams.getTeamCount();
-            } else {
-                teamSize = teamCount.get();
-            }
-
-            for (Map.Entry<String, Integer> entry : sortedAvailableRoom.entrySet()) {
-                if (entry.getValue() >= teamSize) {
-                    availableRoomNames.clear();
-                    System.out.println(availableRoomNames);
-                    availableRoomNames.put(entry.getKey(), entry.getValue());
-                    System.out.println(availableRoomNames);
-                    return availableRoomNames;
+        try {
+            LocalDate reqDate = reqTimeSlot.getDate();
+            List<TimeSlot> timeSlots = timeSlotRepository.findTimeSlotByDate(reqDate);
+            LocalTime reqStartTime = reqTimeSlot.getStartTime();
+            LocalTime reqEndTime = reqTimeSlot.getEndTime();
+            timeSlots.stream().forEach(timeSlot -> {
+                if ((reqStartTime.isAfter(timeSlot.getStartTime()) && reqStartTime.isBefore(timeSlot.getEndTime())) || (reqEndTime.isAfter(timeSlot.getStartTime()) && reqEndTime.isBefore(timeSlot.getEndTime()))) {
+                    bookedRoom.addAll(timeSlot.getRooms());
+                }
+            });
+            List<Room> availableRoom = roomRepository.findAll();
+            availableRoom.removeAll(bookedRoom);
+            Map<String, Integer> availableRoomNames = availableRoom.stream().collect(Collectors.toMap(Room::getRoomName, Room::getRoomCapacity));
+            sortedAvailableRoom = sortByValue(availableRoomNames);
+            if (teamCount.isPresent()) {
+                for (Map.Entry<String, Integer> entry : sortedAvailableRoom.entrySet()) {
+                    if (entry.getValue() >= teamCount.get()) {
+                        return Map.of(entry.getKey(), entry.getValue());
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-
         return sortedAvailableRoom;
     }
 
@@ -113,13 +92,11 @@ public class FindAvailabilityServiceImpl implements FindAvailabilityService {
      * @return Sorted Hashmap
      */
     @Override
-    public HashMap<String, Integer> sortByValue(HashMap<String, Integer> array) {
+    public HashMap<String, Integer> sortByValue(Map<String, Integer> array) {
         List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(array.entrySet());
         Collections.sort(list, (i1, i2) -> i1.getValue().compareTo(i2.getValue()));
         HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
+        list.forEach(aa -> temp.put(aa.getKey(), aa.getValue()));
         return temp;
     }
 
@@ -131,21 +108,18 @@ public class FindAvailabilityServiceImpl implements FindAvailabilityService {
      * @return
      */
     @Override
-    public HashMap<Integer, Boolean> availableEmployeesBasedOnDateAndTime(TimeSlot theTimeSlot, int teamId) {
-        Teams team = teamsRepository.findById(teamId);
-        if (team == null) {
-            throw new MeetingScheduleException("TEAM NOT FOUND");
+    public Map<Integer, Boolean> availableEmployeesBasedOnDateAndTime(TimeSlot theTimeSlot, int teamId) {
+        Map<Integer, Boolean> availableEmployeeStatus = new HashMap<>();
+        try {
+            Teams team = teamsRepository.findById(teamId).orElseThrow(() -> new MeetingScheduleException("Team Id Not found"));
+            List<Employee> employees = team.getEmployees();
+            for (Employee employee : employees) {
+                availableEmployeeStatus.put(employee.getEmployeeId(),
+                        availableEmployeeBasedOnDateAndTime(theTimeSlot, employee));
+            }
+        } catch (Exception e) {
+            throw new MeetingScheduleException(e.getMessage());
         }
-        List<Employee> employees = team.getEmployees();
-        HashMap<Integer, Boolean> availableEmployeeStatus = new HashMap<>();
-        employees.stream().forEach(employee -> {
-            availableEmployeeStatus.put(employee.getEmployeeId(),
-                    availableEmployeeBasedOnDateAndTime(theTimeSlot, employee));
-        });
-//        for (Employee employee : employees) {
-//            availableEmployeeStatus.put(employee.getEmployeeId(),
-//                    availableEmployeeBasedOnDateAndTime(theTimeSlot, employee));
-//        }
         return availableEmployeeStatus;
     }
 
@@ -156,28 +130,18 @@ public class FindAvailabilityServiceImpl implements FindAvailabilityService {
      * @param employee
      * @return
      */
-
     @Override
     public boolean availableEmployeeBasedOnDateAndTime(TimeSlot reqTimeSlot, Employee employee) {
         LocalDate reqDate = reqTimeSlot.getDate();
         LocalTime reqStartTime = reqTimeSlot.getStartTime();
         LocalTime reqEndTime = reqTimeSlot.getEndTime();
-
         List<Teams> teams = employee.getTeams();
-        List<TimeSlot> timeSlots = new ArrayList<>();
-        teams.stream().forEach(individualTeam -> {
-            timeSlots.addAll(individualTeam.getTimeSlots());
-        });
-        for (TimeSlot timeSlot : timeSlots) {
-            if ((reqDate.isEqual(timeSlot.getDate()))
-                    && ((reqStartTime.isAfter(timeSlot.getStartTime())
-                    && reqStartTime.isBefore(timeSlot.getEndTime()))
-                    || (reqEndTime.isAfter(timeSlot.getStartTime())
-                    && reqEndTime.isBefore(timeSlot.getEndTime())))) {
+        List<TimeSlot> timeSlots = teams.stream().flatMap(individualTeam -> individualTeam.getTimeSlots().stream()).collect(Collectors.toList());
+        return timeSlots.stream().anyMatch(timeSlot -> {
+            if ((reqDate.isEqual(timeSlot.getDate())) && ((reqStartTime.isAfter(timeSlot.getStartTime()) && reqStartTime.isBefore(timeSlot.getEndTime())) || (reqEndTime.isAfter(timeSlot.getStartTime()) && reqEndTime.isBefore(timeSlot.getEndTime())))) {
                 return false;
             }
-        }
-        return true;
+            return true;
+        });
     }
-
 }

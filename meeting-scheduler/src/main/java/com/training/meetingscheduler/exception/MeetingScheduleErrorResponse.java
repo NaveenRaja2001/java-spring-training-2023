@@ -1,5 +1,8 @@
 package com.training.meetingscheduler.exception;
 
+/**
+ * Response bean for meetingScheduleError
+ */
 public class MeetingScheduleErrorResponse {
     private int status;
     private String message;
@@ -42,3 +45,4 @@ public class MeetingScheduleErrorResponse {
                 '}';
     }
 }
+

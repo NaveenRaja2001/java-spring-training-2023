@@ -1,6 +1,5 @@
 package com.training.meetingscheduler.controller;
 
-import com.training.meetingscheduler.entity.Teams;
 import com.training.meetingscheduler.entity.TimeSlot;
 import com.training.meetingscheduler.requestobject.CollaborationRequest;
 import com.training.meetingscheduler.responseobject.RoomsResponse;
@@ -47,27 +46,6 @@ class MeetingScheduleControllerTest {
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 
-    /***
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * @throws Exception
-     */
 
     @Test
     void createNewTeam(){
@@ -105,19 +83,14 @@ class MeetingScheduleControllerTest {
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     }
 
-    @Test
-    void updateMeetingDescription() {
-        when(meetingScheduleService.updateMeetingDescription("new description", 1)).thenReturn("Description updated Successfully");
-        ResponseEntity<String> response = meetingScheduleController.updateMeetingDescription("new description", 1);
-        assertEquals(response.getBody(), "Description updated Successfully");
-        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-    }
 
-
-
-
-
-
+//    @Test
+//    void updateMeetingDescription() {
+//        when(meetingScheduleService.updateMeetingDescription("new description", 1)).thenReturn("Description updated Successfully");
+//        ResponseEntity<String> response = meetingScheduleController.updateMeetingDescription("new description", 1);
+//        assertEquals(response.getBody(), "Description updated Successfully");
+//        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+//    }
 
 
 

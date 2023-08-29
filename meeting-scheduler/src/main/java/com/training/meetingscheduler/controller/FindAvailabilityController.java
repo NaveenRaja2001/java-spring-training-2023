@@ -33,16 +33,14 @@ public class FindAvailabilityController {
 
     /**
      * Find the available room based on Date and Time
-     *
      * @param theTimeSlot
-     * @param teamId
      * @param teamCount
      * @return
      */
 
     @GetMapping("/rooms")
-    public ResponseEntity<Map<String, Integer>> availableRoomsBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam Optional<Integer> teamId, @RequestParam Optional<Integer> teamCount) {
-        Map<String, Integer> response = findAvailabilityService.availableRoomsBasedOnDateAndTime(theTimeSlot, teamId, teamCount);
+    public ResponseEntity<Map<String, Integer>> availableRoomsBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam Optional<Integer> teamCount) {
+        Map<String, Integer> response = findAvailabilityService.availableRoomsBasedOnDateAndTime(theTimeSlot,teamCount);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -55,8 +53,8 @@ public class FindAvailabilityController {
      * @return
      */
     @GetMapping("/employees")
-    public ResponseEntity<HashMap<Integer, Boolean>> availableEmployeesBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam int teamId) {
-        HashMap<Integer, Boolean> response = findAvailabilityService.availableEmployeesBasedOnDateAndTime(theTimeSlot, teamId);
+    public ResponseEntity<Map<Integer, Boolean>> availableEmployeesBasedOnDateAndTime(@RequestBody TimeSlot theTimeSlot, @RequestParam int teamId) {
+        Map<Integer, Boolean> response = findAvailabilityService.availableEmployeesBasedOnDateAndTime(theTimeSlot, teamId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

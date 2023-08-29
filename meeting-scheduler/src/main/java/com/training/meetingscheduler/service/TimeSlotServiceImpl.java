@@ -2,7 +2,6 @@ package com.training.meetingscheduler.service;
 
 import com.training.meetingscheduler.entity.Room;
 import com.training.meetingscheduler.entity.TimeSlot;
-import com.training.meetingscheduler.projection.TimeSlotView;
 import com.training.meetingscheduler.repository.TimeSlotRepository;
 import com.training.meetingscheduler.serviceinterface.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +10,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TimeSlotServiceImpl implements TimeSlotService {
     @Autowired
     TimeSlotRepository timeSlotRepository;
-    public List<TimeSlotView> findTimeSlotIdByDate(LocalDate date) {
-//        List<TimeSlot> timeSlots=timeSlotRepository.findAllByDate(date);
-//        List<List<Room>> rooms=null;
-//        for(TimeSlot timeSlot:timeSlots){
-//           rooms.add(timeSlot.getRooms());
-//        }
-//        System.out.print(rooms);
+    public List<TimeSlot> findTimeSlotIdByDate(LocalDate date) {
         return timeSlotRepository.findTimeSlotByDate(date);
     }
 
@@ -38,7 +32,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
-    public TimeSlot find(int id) {
+    public Optional<TimeSlot> find(int id) {
         return timeSlotRepository.findById(id);
     }
 

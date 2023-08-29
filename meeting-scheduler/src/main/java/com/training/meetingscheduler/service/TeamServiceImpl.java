@@ -6,6 +6,8 @@ import com.training.meetingscheduler.serviceinterface.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TeamServiceImpl implements TeamService {
     @Autowired
@@ -22,7 +24,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Teams find(int id) {
+    public Optional<Teams> find(int id) {
         return teamsRepository.findById(id);
     }
 }
