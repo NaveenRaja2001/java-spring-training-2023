@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Hai CDW</title>
+</head>
+<body>
+ <h2>This the message </h2>
+<hr>
+
+<!-- Display User name and role -->
+ <p>
+     User:<span sec:authentication="principal.username"></span>
+     <br><br>
+     Role(s):<span  sec:authentication="principal.authorities"></span>
+ </p>
+<hr>
+ <div sec:authorize="hasRole('MANAGER')">
+ <p>
+     <a action="#" th:href="@{/leaders}">Leadership Meeting</a>
+     (Only for Manager people)
+ </p>
+ </div>
+ <hr>
+ <div sec:authorize="hasRole('ADMIN')">
+ <p>
+     <a action="#" th:href="@{/systems}">Admin Meeting</a>
+     (Only for System people)
+ </p>
+ </div>
+ <p>
+     Welcome to the security project
+ </p>
+ <form action="#" th:action="@{logout}" method="POST">
+   <input type="submit"  value="Logout"/>
+ </form>
+</body>
+</html>
