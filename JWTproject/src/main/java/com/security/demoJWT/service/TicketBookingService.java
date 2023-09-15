@@ -4,6 +4,7 @@ import com.security.demoJWT.entity.Booked;
 import com.security.demoJWT.entity.Link;
 import com.security.demoJWT.entity.Location;
 import com.security.demoJWT.entity.Movie;
+import com.security.demoJWT.exception.TicketBookingException;
 import com.security.demoJWT.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,26 +48,26 @@ public class TicketBookingService {
     }
 
     public Location removeLocation(String name) {
-        Optional<Location> location=locationRepository.findBylocationName(name);
-        locationRepository.delete(location.get());
-        return location.get();
+      Location location=locationRepository.findBylocationName(name).orElseThrow(()->new TicketBookingException("Location is not found"));
+        locationRepository.delete(location);
+        return location;
     }
 
     public Booked bookTicket(Integer id) {
-        Optional<Link> link=linkRepository.findById(id);
+        Link link=linkRepository.findById(id).orElseThrow(()->new TicketBookingException("Link is not found"));
         Booked booked=new Booked();
-        booked.setLink(link.get());
+        booked.setLink(link);
         booked.setStatus("booked");
         bookedRepository.save(booked);
         return booked;
     }
 
     public Booked cancelTicket(Integer id) {
-        Optional<Booked> newBooked=bookedRepository.findById(id);
-        if(newBooked.get().getStatus().equals("booked")){
-            newBooked.get().setStatus("cancelled");
+        Booked newBooked=bookedRepository.findById(id).orElseThrow(()->new TicketBookingException("ticket is not found"));
+        if(newBooked.getStatus().equals("booked")){
+            newBooked.setStatus("cancelled");
         }
-        bookedRepository.save(newBooked.get());
-        return newBooked.get();
+        bookedRepository.save(newBooked);
+        return newBooked;
     }
 }

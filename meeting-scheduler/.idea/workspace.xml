@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ed29eed0-6afb-4b83-9bd8-0c342b23574e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/repo/RolesRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/user/Roles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../JWTproject/src/test/java/com/security/demoJWT/repo/RolesRepositoryTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JWTproject/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../JWTproject/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/config/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/config/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/config/SecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/config/SecurityConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/controller/DemoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../JWTproject/src/main/java/com/security/demoJWT/controller/DemoController.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2VQMknbsG5KQ9iSHv9PIoH6NS2S" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ed29eed0-6afb-4b83-9bd8-0c342b23574e" name="Changes" comment="" />
+      <created>1694763995892</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1694763995892</updated>
+    </task>
+    <servers />
+  </component>
+</project>

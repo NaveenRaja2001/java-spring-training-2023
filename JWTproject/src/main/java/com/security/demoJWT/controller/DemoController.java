@@ -3,6 +3,7 @@ package com.security.demoJWT.controller;
 import com.security.demoJWT.entity.*;
 import com.security.demoJWT.repo.*;
 import com.security.demoJWT.service.TicketBookingService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -95,6 +96,7 @@ public class DemoController {
     }
 
     @GetMapping("/showAvailableShows")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<Link>> showAvailableShows() {
         List<Link> links = ticketBookingService.showAvailableShows();
         return ResponseEntity.ok(links);

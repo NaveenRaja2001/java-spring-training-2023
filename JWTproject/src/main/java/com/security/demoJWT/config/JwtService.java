@@ -1,5 +1,6 @@
 package com.security.demoJWT.config;
 
+import com.security.demoJWT.user.Role;
 import com.security.demoJWT.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -51,6 +52,7 @@ public class JwtService {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
+                .claim("roles", Role.USER)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*30))
