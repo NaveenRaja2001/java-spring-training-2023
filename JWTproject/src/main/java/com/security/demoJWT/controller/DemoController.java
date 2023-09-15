@@ -2,14 +2,14 @@ package com.security.demoJWT.controller;
 
 import com.security.demoJWT.entity.*;
 import com.security.demoJWT.repo.*;
+import com.security.demoJWT.service.TicketBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +28,9 @@ public class DemoController {
 
     @Autowired
     BookedRepository bookedRepository;
+
+    @Autowired
+    TicketBookingService ticketBookingService;
 
     @GetMapping("/hello")
     public ResponseEntity<String> sayHello() {
@@ -86,62 +89,48 @@ public class DemoController {
 //    }
 
     @GetMapping("/showAvailableMovies")
-    public  ResponseEntity<List<Movie>> showAvailableMovies(){
-        List<Movie> movies=movieRepository.findAll();
+    public ResponseEntity<List<Movie>> showAvailableMovies() {
+        List<Movie> movies = ticketBookingService.showAvailableMovies();
         return ResponseEntity.ok(movies);
     }
+
     @GetMapping("/showAvailableShows")
-    public  ResponseEntity<List<Link>> showAvailableShows(){
-        List<Link> links=linkRepository.findAll();
+    public ResponseEntity<List<Link>> showAvailableShows() {
+        List<Link> links = ticketBookingService.showAvailableShows();
         return ResponseEntity.ok(links);
     }
 
     @PostMapping("/location")
-    public ResponseEntity<Location> addLocation(@RequestBody Location location){
-        Optional<Location> newLocation=locationRepository.findBylocationName(location.getLocationName());
-        if(newLocation.isPresent()){
-            throw new UsernameNotFoundException("No location found");
-        }
-        locationRepository.save(location);
-        return ResponseEntity.ok(location);
+    public ResponseEntity<Location> addLocation(@RequestBody Location location) {
+        Location theLocation = ticketBookingService.addLocation(location);
+        return ResponseEntity.ok(theLocation);
     }
 
 
     @DeleteMapping("/location")
-    public ResponseEntity<Location> removeLocation(@RequestParam String name){
-        Optional<Location> location=locationRepository.findBylocationName(name);
-        locationRepository.delete(location.get());
-        return ResponseEntity.ok(location.get());
+    public ResponseEntity<Location> removeLocation(@RequestParam String name) {
+        Location theLocation = ticketBookingService.removeLocation(name);
+        return ResponseEntity.ok(theLocation);
     }
-
 
 
     @PostMapping("/ticket")
-    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id){
-        Optional<Link> link=linkRepository.findById(id);
-        Booked booked=new Booked();
-        booked.setLink(link.get());
-        booked.setStatus("booked");
-bookedRepository.save(booked);
-        return ResponseEntity.ok(booked);
+    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id) {
+        Booked bookedTicket = ticketBookingService.bookTicket(id);
+        return ResponseEntity.ok(bookedTicket);
     }
 
     @PatchMapping("/ticket")
-    public ResponseEntity<Booked> cancelTicket(@RequestBody Booked booked){
-        Optional<Booked> newBooked=bookedRepository.findById(booked.getId());
-        if(newBooked.get().getStatus().equals("booked")){
-            newBooked.get().setStatus("cancelled");
-        }
-        bookedRepository.save(newBooked.get());
-        return ResponseEntity.ok(newBooked.get());
+    public ResponseEntity<Booked> cancelTicket(@RequestParam Integer id) {
+        Booked cancelTicket = ticketBookingService.cancelTicket(id);
+        return ResponseEntity.ok(cancelTicket);
     }
 
-
-
-
-
-
-
+    @GetMapping("/bookedtickets")
+    public ResponseEntity<List<Booked>> bookedOrCancelledTickets(@RequestParam String Status){
+        List<Booked> TicketStatus = bookedRepository.findAllByStatus(Status);
+        return ResponseEntity.ok(TicketStatus);
+    }
 
 
 }
