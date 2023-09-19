@@ -89,50 +89,7 @@ public class DemoController {
 //        return ResponseEntity.ok(newMovie);
 //    }
 
-    @GetMapping("/showAvailableMovies")
-    public ResponseEntity<List<Movie>> showAvailableMovies() {
-        List<Movie> movies = ticketBookingService.showAvailableMovies();
-        return ResponseEntity.ok(movies);
-    }
 
-    @GetMapping("/showAvailableShows")
-    @RolesAllowed("ADMIN")
-    public ResponseEntity<List<Link>> showAvailableShows() {
-        List<Link> links = ticketBookingService.showAvailableShows();
-        return ResponseEntity.ok(links);
-    }
-
-    @PostMapping("/location")
-    public ResponseEntity<Location> addLocation(@RequestBody Location location) {
-        Location theLocation = ticketBookingService.addLocation(location);
-        return ResponseEntity.ok(theLocation);
-    }
-
-
-    @DeleteMapping("/location")
-    public ResponseEntity<Location> removeLocation(@RequestParam String name) {
-        Location theLocation = ticketBookingService.removeLocation(name);
-        return ResponseEntity.ok(theLocation);
-    }
-
-
-    @PostMapping("/ticket")
-    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id) {
-        Booked bookedTicket = ticketBookingService.bookTicket(id);
-        return ResponseEntity.ok(bookedTicket);
-    }
-
-    @PatchMapping("/ticket")
-    public ResponseEntity<Booked> cancelTicket(@RequestParam Integer id) {
-        Booked cancelTicket = ticketBookingService.cancelTicket(id);
-        return ResponseEntity.ok(cancelTicket);
-    }
-
-    @GetMapping("/bookedtickets")
-    public ResponseEntity<List<Booked>> bookedOrCancelledTickets(@RequestParam String Status){
-        List<Booked> TicketStatus = bookedRepository.findAllByStatus(Status);
-        return ResponseEntity.ok(TicketStatus);
-    }
 
 
 }

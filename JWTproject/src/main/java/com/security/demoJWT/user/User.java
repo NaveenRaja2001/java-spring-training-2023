@@ -1,7 +1,6 @@
 package com.security.demoJWT.user;
 
 
-import com.sun.jdi.PrimitiveValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Builder
@@ -28,6 +26,28 @@ public class User implements UserDetails {
     private String lastName;
     private String DOB;
     private String gender;
+
+    /**
+     *
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    private Set<Roles>roles=new HashSet<>();
+
+    public Set<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Roles> roles) {
+        this.roles = roles;
+    }
+
+    /**
+     *
+     */
+
     private String email;
     private String password;
 
@@ -36,7 +56,19 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
+        roles.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+        return List.of(new SimpleGrantedAuthority(authorities.toString()));
+    }
+
+    public User(String firstName, String lastName, String DOB, String gender, String email,Set<Roles> roles,String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.DOB = DOB;
+        this.gender = gender;
+        this.roles = roles;
+        this.email = email;
+        this.password = password;
     }
 
     @Override
