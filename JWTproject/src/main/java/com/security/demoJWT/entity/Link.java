@@ -1,6 +1,12 @@
 package com.security.demoJWT.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,8 +29,8 @@ public class Link {
     @JoinColumn(name = "movies_id")
     private Movie movie;
     @OneToOne
-    @JoinColumn(name = "locations_id")
-    private Location location;
+    @JoinColumn(name = "theatre_id")
+    private Theatre theatre;
 
     private LocalDate date;
 }

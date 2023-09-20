@@ -9,19 +9,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "locations")
-public class Location {
+@Table(name = "token_and_status")
+public class TokenAndStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String locationName;
-    private Boolean activeStatus;
-    private String locationType;
-    private int availableCount;
-//    @OneToOne(mappedBy = "location")
-//    private Link link;
+    private String token;
+    private Timestamp timestamp;
 }

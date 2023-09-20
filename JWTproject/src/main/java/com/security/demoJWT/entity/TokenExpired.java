@@ -13,15 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "locations")
-public class Location {
+@Table(name = "tokenExpired")
+public class TokenExpired{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String locationName;
-    private Boolean activeStatus;
-    private String locationType;
-    private int availableCount;
-//    @OneToOne(mappedBy = "location")
-//    private Link link;
+    private Integer id;
+    private String token;
 }

@@ -1,10 +1,19 @@
 package com.security.demoJWT.service;
 
-import com.security.demoJWT.entity.*;
+import com.security.demoJWT.entity.Booked;
+import com.security.demoJWT.entity.Link;
+import com.security.demoJWT.entity.Location;
+import com.security.demoJWT.entity.Movie;
+import com.security.demoJWT.entity.Show;
+import com.security.demoJWT.entity.Theatre;
 import com.security.demoJWT.exception.TicketBookingException;
-import com.security.demoJWT.repo.*;
+import com.security.demoJWT.repo.BookedRepository;
+import com.security.demoJWT.repo.LinkRepository;
+import com.security.demoJWT.repo.LocationRepository;
+import com.security.demoJWT.repo.MovieRepository;
+import com.security.demoJWT.repo.ShowRepository;
+import com.security.demoJWT.repo.TheatreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,6 +22,8 @@ import java.util.Optional;
 
 @Service
 public class TicketBookingService {
+    @Autowired
+    TheatreRepository theatreRepository;
     @Autowired
     LocationRepository locationRepository;
     @Autowired
@@ -53,7 +64,7 @@ public class TicketBookingService {
 
     public Booked bookTicket(Integer id,int ticketCount) {
         Link link = linkRepository.findById(id).orElseThrow(() -> new TicketBookingException("Link is not found"));
-        Location location=link.getLocation();
+        Location location=link.getTheatre().getLocation();
         int availableCount=location.getAvailableCount();
         if(!(availableCount>ticketCount)){
             throw new TicketBookingException("Ticket is not available or ticket count may ne less than expected");
@@ -76,7 +87,7 @@ public class TicketBookingService {
         else {
             throw new TicketBookingException("Booked Ticket Id not found");
         }
-        Location location=locationRepository.findById(newBooked.getLink().getLocation().getId()).orElseThrow();
+        Location location=locationRepository.findById(newBooked.getLink().getTheatre().getLocation().getId()).orElseThrow();
         location.setAvailableCount(location.getAvailableCount()+newBooked.getTicketCount());
         bookedRepository.save(newBooked);
         return newBooked;
@@ -102,7 +113,7 @@ public class TicketBookingService {
         else {
             throw new TicketBookingException("Booked Ticket Id not found");
         }
-        Location location=locationRepository.findById(newBooked.getLink().getLocation().getId()).orElseThrow();
+        Location location=locationRepository.findById(newBooked.getLink().getTheatre().getLocation().getId()).orElseThrow();
         location.setAvailableCount(location.getAvailableCount()+newBooked.getTicketCount());
         bookedRepository.save(newBooked);
         return newBooked;
@@ -113,12 +124,28 @@ public class TicketBookingService {
         Link link = new Link();
         Show show = showRepository.findById(showId).orElseThrow(()->new TicketBookingException("Show Id not found"));
         Movie movie = movieRepository.findById(movieId).orElseThrow(()->new TicketBookingException("Movie Id Not Found"));
-        Location location = locationRepository.findById(locationId).orElseThrow(()->new TicketBookingException("LocationId Not Found"));
+//      Location location = locationRepository.findById(locationId).orElseThrow(()->new TicketBookingException("LocationId Not Found"));
+        Theatre theatre= theatreRepository.findById(locationId).orElseThrow(()->new TicketBookingException("Theatre Id Not Found"));
         link.setMovie(movie);
         link.setShow(show);
-        link.setLocation(location);
+        link.setTheatre(theatre);
         link.setDate(LocalDate.parse("2018-12-28"));
         linkRepository.save(link);
         return link;
+    }
+
+    public Theatre addTheatre(String theatreName,String locationName) {
+
+        Location location=locationRepository.findBylocationName(locationName).orElseThrow(()->new TicketBookingException("Location Not Found"));
+        Theatre newTheatre=new Theatre();
+        newTheatre.setLocation(location);
+        newTheatre.setTheatreName(theatreName);
+        return theatreRepository.save(newTheatre);
+    }
+
+    public Theatre removeTheatre(Integer id) {
+        Theatre theatre=theatreRepository.findById(id).orElseThrow(()->new TicketBookingException("Id NOT FOUND"));
+        theatreRepository.delete(theatre);
+        return theatre;
     }
 }

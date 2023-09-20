@@ -1,5 +1,7 @@
 package com.security.demoJWT.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +27,11 @@ public class AuthenticationController{
             @RequestBody AuthenticationRequest request
     ) {
         return service.authenticate(request);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(  @NonNull HttpServletRequest request){
+        return service.logout(request);
     }
 
 }
