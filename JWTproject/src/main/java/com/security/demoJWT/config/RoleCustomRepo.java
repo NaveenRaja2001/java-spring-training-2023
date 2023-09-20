@@ -18,19 +18,19 @@ public class RoleCustomRepo {
     private EntityManager entityManager;
 
 
-    public List<Roles> getRole(User user){
-        StringBuilder sql =new StringBuilder()
+    public List<Roles> getRole(User user) {
+        StringBuilder sql = new StringBuilder()
                 .append("SELECT r.name as name \n" +
                         "FROM user u\n" +
                         "JOIN user_roles ur ON u.id=ur.user_id\n" +
-                        "JOIN roles r ON r.id=ur.roles_id\n"+
+                        "JOIN roles r ON r.id=ur.roles_id\n" +
                         "Where 1=1");
-        if(user.getEmail()!=null){
+        if (user.getEmail() != null) {
             sql.append(" and email=:email");
         }
-        NativeQuery<Roles> query=((Session)entityManager.getDelegate()).createNativeQuery(sql.toString());
-        if(user.getEmail()!= null){
-            query.setParameter("email",user.getEmail());
+        NativeQuery<Roles> query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());
+        if (user.getEmail() != null) {
+            query.setParameter("email", user.getEmail());
         }
         query.addScalar("name", StandardBasicTypes.STRING);
         query.setResultTransformer(Transformers.aliasToBean(Roles.class));

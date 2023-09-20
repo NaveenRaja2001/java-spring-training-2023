@@ -20,8 +20,11 @@ public class UserController {
 
     @Autowired
     BookedRepository bookedRepository;
+
     @GetMapping
-    public String hello(){ return "Hi this is user";}
+    public String hello() {
+        return "Hi this is user";
+    }
 
     @GetMapping("/showAvailableMovies")
     public ResponseEntity<List<Movie>> showAvailableMovies() {
@@ -36,19 +39,14 @@ public class UserController {
     }
 
     @PostMapping("/ticket")
-    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id) {
-        Booked bookedTicket = ticketBookingService.bookTicket(id);
+    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id,Integer ticketCount) {
+
+        Booked bookedTicket = ticketBookingService.bookTicket(id,ticketCount);
         return ResponseEntity.ok(bookedTicket);
     }
 
-    @PatchMapping("/ticket")
-    public ResponseEntity<Booked> cancelTicket(@RequestParam Integer id) {
-        Booked cancelTicket = ticketBookingService.cancelTicket(id);
-        return ResponseEntity.ok(cancelTicket);
-    }
-
     @GetMapping("/bookedtickets")
-    public ResponseEntity<List<Booked>> bookedOrCancelledTickets(@RequestParam String Status){
+    public ResponseEntity<List<Booked>> bookedOrCancelledTickets(@RequestParam String Status) {
         List<Booked> TicketStatus = bookedRepository.findAllByStatus(Status);
         return ResponseEntity.ok(TicketStatus);
     }

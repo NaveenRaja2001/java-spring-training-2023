@@ -18,5 +18,6 @@ public class Booked {
     @JoinColumn(name = "links_id")
     private Link link;
     private String status;
+    private Integer ticketCount;
 
 }
