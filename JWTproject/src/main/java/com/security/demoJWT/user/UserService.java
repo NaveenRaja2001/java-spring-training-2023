@@ -7,39 +7,56 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+
+
 @Service
 public class UserService {
-   @Autowired
+    @Autowired
     RolesRepository rolesRepository;
 
-   @Autowired
+    @Autowired
     UserRepository userRepository;
 
-   @Autowired
+    @Autowired
     PasswordEncoder passwordEncoder;
 
-   public User saveUser(User user){
-       user.setPassword(passwordEncoder.encode(user.getPassword()));
-       user.setRoles(new HashSet<>());
-       return userRepository.save(user);
-   }
+    /**
+     * This method is used to add user entity to the database
+     *
+     * @param user
+     * @return
+     */
+    public User saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(new HashSet<>());
+        return userRepository.save(user);
+    }
 
-   public Roles saveRole(Roles role){
-       return rolesRepository.save(role);
-   }
+    /**
+     * This method is used to add roles entity to the database
+     *
+     * @param role
+     * @return
+     */
+    public Roles saveRole(Roles role) {
+        return rolesRepository.save(role);
+    }
 
-   public void addToUser(String username,String rolesname){
-  if(!userRepository.findByEmail(username).isPresent()){
-      throw new TicketBookingException("User with email"+username+" does not exist");
-  }
-  Roles roles=rolesRepository.findByName(rolesname);
- if(roles==null){
-     throw new TicketBookingException("Roles with name"+rolesname+" does not exist");
- }
- User user=userRepository.findByEmail(username).get();
- user.getRoles().add(roles);
-   }
-
-
-
+    /**
+     * This method is used to links roles to the user
+     *
+     * @param username
+     * @param rolesname
+     */
+    public void addToUser(String username, String rolesname) {
+        if (!userRepository.findByEmail(username).isPresent()) {
+            throw new TicketBookingException("User with email" + username + " does not exist");
+        }
+        Roles roles = rolesRepository.findByName(rolesname);
+        if (roles == null) {
+            throw new TicketBookingException("Roles with name" + rolesname + " does not exist");
+        }
+        User user = userRepository.findByEmail(username).get();
+        user.getRoles().add(roles);
+    }
 }

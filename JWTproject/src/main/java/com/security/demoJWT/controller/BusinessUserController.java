@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * All these endpoints are accessible one by businessUser
+ */
 
 @RestController
 @RequestMapping("/businessUser")
@@ -29,22 +32,43 @@ public class BusinessUserController {
     LinkRepository linkRepository;
     @Autowired
     TicketBookingService ticketBookingService;
+
+    /**
+     * This endpoint is used to cancel the tickets
+     *
+     * @param id
+     * @return
+     */
     @PatchMapping("/ticket")
     public ResponseEntity<Booked> cancelTicket(@RequestParam Integer id) {
         Booked cancelTicket = ticketBookingService.cancelTicket(id);
         return ResponseEntity.ok(cancelTicket);
     }
 
+    /**
+     * This endpoint is used to approve the cancellation
+     *
+     * @param id
+     * @return
+     */
     @PatchMapping("/approveCancellation")
-    public ResponseEntity<Booked> approveCancellation(@RequestParam Integer id){
+    public ResponseEntity<Booked> approveCancellation(@RequestParam Integer id) {
         Booked cancelTicket = ticketBookingService.approveCancellation(id);
         return ResponseEntity.ok(cancelTicket);
     }
 
+    /**
+     * This endpoint is used to add new shows
+     *
+     * @param showId
+     * @param movieId
+     * @param locationId
+     * @return
+     */
     @GetMapping("/addShows")
-    public ResponseEntity<Link> addShows(@RequestParam Integer showId,@RequestParam Integer movieId,@RequestParam Integer locationId) {
+    public ResponseEntity<Link> addShows(@RequestParam Integer showId, @RequestParam Integer movieId, @RequestParam Integer locationId) {
 
-        Link link=ticketBookingService.addShows(showId,movieId,locationId);
+        Link link = ticketBookingService.addShows(showId, movieId, locationId);
         return ResponseEntity.ok(link);
     }
 

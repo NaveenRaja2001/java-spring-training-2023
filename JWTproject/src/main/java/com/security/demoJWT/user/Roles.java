@@ -26,39 +26,40 @@ import java.util.Set;
 @Table(name = "Roles")
 public class Roles {
 
-    @PrePersist
-    protected void onCreate()
-    {
-        this.created_At=new Date(System.currentTimeMillis());
-    }
-
-    @PreUpdate
-    protected void onUpdate(){
-        this.updated_At=new Date(System.currentTimeMillis());
-    }
     @Id
     @SequenceGenerator(name = "role_sequence",
-    sequenceName = "role_sequence",
-    allocationSize = 1)
+            sequenceName = "role_sequence",
+            allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO,
-    generator = "role_sequence")
+            generator = "role_sequence")
     private Long id;
-
-  private String name;
-  private String description;
-  private Date created_At;
+    private String name;
+    private String description;
+    private Date created_At;
     private Date updated_At;
-
     @ManyToMany
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "roles_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> user=new HashSet<>();
-
+    private Set<User> user = new HashSet<>();
     public Roles(Long id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    public Roles(String name) {
+        this.name = name;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.created_At = new Date(System.currentTimeMillis());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updated_At = new Date(System.currentTimeMillis());
     }
 
     public Long getId() {
@@ -107,9 +108,5 @@ public class Roles {
 
     public void setUser(Set<User> user) {
         this.user = user;
-    }
-
-    public Roles(String name) {
-        this.name = name;
     }
 }

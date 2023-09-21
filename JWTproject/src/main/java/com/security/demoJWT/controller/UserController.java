@@ -43,9 +43,9 @@ public class UserController {
     }
 
     @PostMapping("/ticket")
-    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id,Integer ticketCount) {
+    public ResponseEntity<Booked> bookTicket(@RequestParam Integer id, Integer ticketCount) {
 
-        Booked bookedTicket = ticketBookingService.bookTicket(id,ticketCount);
+        Booked bookedTicket = ticketBookingService.bookTicket(id, ticketCount);
         return ResponseEntity.ok(bookedTicket);
     }
 

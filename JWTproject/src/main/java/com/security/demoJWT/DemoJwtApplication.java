@@ -1,7 +1,5 @@
 package com.security.demoJWT;
 
-import com.security.demoJWT.user.Roles;
-import com.security.demoJWT.user.User;
 import com.security.demoJWT.user.UserRepository;
 import com.security.demoJWT.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,29 +12,27 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableWebSecurity
 @EnableJpaRepositories
 public class DemoJwtApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(DemoJwtApplication.class, args);
-	}
+    @Autowired
+    UserRepository userRepository;
 
-@Bean
-BCryptPasswordEncoder bCryptPasswordEncoder(){
-	return new BCryptPasswordEncoder();
-}
+    public static void main(String[] args) {
+        SpringApplication.run(DemoJwtApplication.class, args);
+    }
 
-@Autowired
-	UserRepository userRepository;
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-@Bean
-CommandLineRunner run(UserService userService){
-	return args -> {
+    @Bean
+    CommandLineRunner run(UserService userService) {
+        return args -> {
 //		Roles roles1=new Roles(null,"ROLE_USER","this is user");
 //		Roles roles2=new Roles(null,"ROLE_BUSINESS_USER","this is business user");
 //		Roles roles3=new Roles(null,"ROLE_ADMIN","this is admin");
@@ -53,8 +49,8 @@ CommandLineRunner run(UserService userService){
 ////			userService.addToUser("hari@gmail.com","ROLE_ADMIN");
 //			System.out.print("||||||||||||||"+userRepository.findByEmail("naveenraja@gmail.com").get().getRoles());
 
-	};
-}
+        };
+    }
 
 }
 

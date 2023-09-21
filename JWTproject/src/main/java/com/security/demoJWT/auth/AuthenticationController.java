@@ -12,16 +12,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticationController{
+public class AuthenticationController {
 
     private final AuthenticationService service;
 
+    /**
+     * This endpoint is used to register the bew user
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
         return service.register(request);
     }
+
+    /**
+     * This endpoint is used to authenticate3 the user if the user credentials are correct
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
@@ -29,8 +42,14 @@ public class AuthenticationController{
         return service.authenticate(request);
     }
 
+    /**
+     * This endpoint is used to logout the user with token
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(  @NonNull HttpServletRequest request){
+    public ResponseEntity<?> logout(@NonNull HttpServletRequest request) {
         return service.logout(request);
     }
 

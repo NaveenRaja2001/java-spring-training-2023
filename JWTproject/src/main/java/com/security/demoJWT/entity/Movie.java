@@ -23,6 +23,4 @@ public class Movie {
     private String movieName;
     private String description;
 
-//    @OneToOne(mappedBy = "movie")
-//    private Link link;
 }

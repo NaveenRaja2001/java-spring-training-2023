@@ -22,6 +22,4 @@ public class Location {
     private Boolean activeStatus;
     private String locationType;
     private int availableCount;
-//    @OneToOne(mappedBy = "location")
-//    private Link link;
 }

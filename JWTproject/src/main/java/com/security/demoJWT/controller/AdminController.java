@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * All these endpoints are accessible one by admin
+ */
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -24,25 +27,49 @@ public class AdminController {
         return "Hi this is admin";
     }
 
+    /**
+     * This endpoint is used to add the location
+     *
+     * @param location
+     * @return
+     */
     @PostMapping("/location")
     public ResponseEntity<Location> addLocation(@RequestBody Location location) {
         Location theLocation = ticketBookingService.addLocation(location);
         return ResponseEntity.ok(theLocation);
     }
 
-
+    /**
+     * This endpoint is used to remove the location
+     *
+     * @param name
+     * @return
+     */
     @DeleteMapping("/location")
     public ResponseEntity<Location> removeLocation(@RequestParam String name) {
         Location theLocation = ticketBookingService.removeLocation(name);
         return ResponseEntity.ok(theLocation);
     }
 
+    /**
+     * This endpoint is used to add new theatre
+     *
+     * @param theatreName
+     * @param locationName
+     * @return
+     */
     @PostMapping("/theatre")
-    public ResponseEntity<Theatre> addTheatre(@RequestParam String theatreName ,@RequestParam String locationName) {
-        Theatre addedTheatre = ticketBookingService.addTheatre(theatreName,locationName);
+    public ResponseEntity<Theatre> addTheatre(@RequestParam String theatreName, @RequestParam String locationName) {
+        Theatre addedTheatre = ticketBookingService.addTheatre(theatreName, locationName);
         return ResponseEntity.ok(addedTheatre);
     }
 
+    /**
+     * This endpoint is used to remove the existing theatre
+     *
+     * @param id
+     * @return
+     */
     @DeleteMapping("/theatre")
     public ResponseEntity<Theatre> removeTheatre(@RequestParam Integer id) {
         Theatre addedTheatre = ticketBookingService.removeTheatre(id);

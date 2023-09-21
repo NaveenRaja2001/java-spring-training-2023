@@ -33,76 +33,66 @@ import java.util.Collection;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-@Autowired
-private final UserRepository userRepository;
-
-    @Value("${secret.key}")
-    private String secretKey;
-
+    @Autowired
+    private final UserRepository userRepository;
     @Autowired
     private final UserDetailsService userDetailsService;
-    @Autowired
-    private TokenAndStatusRepository tokenAndStatusRepository;
-
     @Autowired
     TokenExpiredRepository tokenExpiredRepository;
     @Autowired
     JwtService jwtService;
+    @Autowired
+    private TokenAndStatusRepository tokenAndStatusRepository;
+    @Value("${secret.key}")
+    private String secretKey;
+
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-         String authHeader = request.getHeader(AUTHORIZATION);
-         if(authHeader!=null && authHeader.startsWith("Bearer ")){
-             try{
-                 String token=authHeader.substring("Bearer ".length());
-                 TokenAndStatus tokenAndStatus=null;
-                 Timestamp currentTimestamp=new Timestamp(System.currentTimeMillis());
-
-
-
-                 if(tokenAndStatusRepository.existsByToken(token)){
-                     tokenAndStatus=tokenAndStatusRepository.findByToken(token);
-                     tokenAndStatus.setTimestamp(currentTimestamp);
-                     System.out.print(tokenAndStatus.getTimestamp());
-                 }
-                 else {
-                     tokenAndStatus=new TokenAndStatus();
-                     tokenAndStatus.setToken(token);
-                     tokenAndStatus.setTimestamp(currentTimestamp);
-                 }
-
-                 tokenAndStatusRepository.save(tokenAndStatus);
-
-
-                 Algorithm algorithm=Algorithm.HMAC256((secretKey.getBytes()));
-                 JWTVerifier verifier=JWT.require(algorithm).build();
-                 DecodedJWT decodedJWT=verifier.verify(token);
-                 String username=decodedJWT.getSubject();
-                 if(tokenExpiredRepository.existsByToken(token)){
-                     throw new TicketBookingException("Blocked Token");
-                 }
-                 userRepository.findByEmail(username).orElseThrow(()->new Exception("Invalid Token"));
-                 String[] roles=decodedJWT.getClaim("roles").asArray(String.class);
-                 Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
-                 Arrays.stream(roles).forEach(role->{
-                     authorities.add(new SimpleGrantedAuthority(role));
-                 });
-                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(username,null,authorities);
-                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                 filterChain.doFilter(request,response);
-             } catch (Exception e) {
-                 throw new TicketBookingException(e);
-             }
-         }else {
-             filterChain.doFilter(request,response);
-         }
+        String authHeader = request.getHeader(AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String token = authHeader.substring("Bearer ".length());
+                TokenAndStatus tokenAndStatus = null;
+                Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                if (tokenAndStatusRepository.existsByToken(token)) {
+                    tokenAndStatus = tokenAndStatusRepository.findByToken(token);
+                    tokenAndStatus.setTimestamp(currentTimestamp);
+                    System.out.print(tokenAndStatus.getTimestamp());
+                } else {
+                    tokenAndStatus = new TokenAndStatus();
+                    tokenAndStatus.setToken(token);
+                    tokenAndStatus.setTimestamp(currentTimestamp);
+                }
+                tokenAndStatusRepository.save(tokenAndStatus);
+                Algorithm algorithm = Algorithm.HMAC256((secretKey.getBytes()));
+                JWTVerifier verifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = verifier.verify(token);
+                String username = decodedJWT.getSubject();
+                if (tokenExpiredRepository.existsByToken(token)) {
+                    throw new TicketBookingException("Blocked Token");
+                }
+                userRepository.findByEmail(username).orElseThrow(() -> new Exception("Invalid Token"));
+                String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                Arrays.stream(roles).forEach(role -> {
+                    authorities.add(new SimpleGrantedAuthority(role));
+                });
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                filterChain.doFilter(request, response);
+            } catch (Exception e) {
+                throw new TicketBookingException(e);
+            }
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
 
 }

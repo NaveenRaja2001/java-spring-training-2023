@@ -29,32 +29,31 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
+    private final String SECRET = "5367566B59703373367639792F423F4528482B4D621655468576D5A71347437";
     @Autowired
     RoleCustomRepo roleCustomRepo;
     @Autowired
     UserRepository userRepository;
-
     @Value("${secret.key}")
     private String secretKey;
 
-public String genTok(User user, Collection<SimpleGrantedAuthority> authorities){
-    Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
-    return JWT.create()
-            .withSubject(user.getEmail())
-            .withExpiresAt(new Date(System.currentTimeMillis()+70*60*1000))
-            .withClaim("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-            .sign(algorithm);
-}
-
-    public String generateRefreshToken(User user, Collection<SimpleGrantedAuthority> authorities){
-        Algorithm algorithm=Algorithm.HMAC256(secretKey.getBytes());
+    public String genTok(User user, Collection<SimpleGrantedAuthority> authorities) {
+        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
         return JWT.create()
                 .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis()+70*60*1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 70 * 60 * 1000))
+                .withClaim("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
     }
 
-    private final String SECRET="5367566B59703373367639792F423F4528482B4D621655468576D5A71347437";
+    public String generateRefreshToken(User user, Collection<SimpleGrantedAuthority> authorities) {
+        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+        return JWT.create()
+                .withSubject(user.getEmail())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 70 * 60 * 1000))
+                .sign(algorithm);
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -64,8 +63,8 @@ public String genTok(User user, Collection<SimpleGrantedAuthority> authorities){
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(),userDetails);
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -80,6 +79,7 @@ public String genTok(User user, Collection<SimpleGrantedAuthority> authorities){
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
     private String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
@@ -91,15 +91,13 @@ public String genTok(User user, Collection<SimpleGrantedAuthority> authorities){
                 .claim("roles", Role.USER)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
-
-
-    private Claims extractAllClaims(String str){
+    private Claims extractAllClaims(String str) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -110,7 +108,7 @@ public String genTok(User user, Collection<SimpleGrantedAuthority> authorities){
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

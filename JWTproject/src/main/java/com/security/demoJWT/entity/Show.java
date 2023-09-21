@@ -27,7 +27,4 @@ public class Show{
 
     private LocalTime endTime;
 
-
-//    @OneToOne(mappedBy = "show")
-//    private Link link;
 }

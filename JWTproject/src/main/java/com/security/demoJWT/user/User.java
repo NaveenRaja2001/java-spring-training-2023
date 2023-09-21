@@ -41,14 +41,25 @@ public class User implements UserDetails {
     private String DOB;
     private String gender;
 
-    /**
-     *
-     */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "roles_id"))
-    private Set<Roles>roles=new HashSet<>();
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    private Set<Roles> roles = new HashSet<>();
+
+    private String email;
+    private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    public User(String firstName, String lastName, String DOB, String gender, String email, Set<Roles> roles, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.DOB = DOB;
+        this.gender = gender;
+        this.roles = roles;
+        this.email = email;
+        this.password = password;
+    }
 
     public Set<Roles> getRoles() {
         return roles;
@@ -58,31 +69,11 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    /**
-     *
-     */
-
-    private String email;
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> authorities=new ArrayList<>();
-        roles.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        roles.stream().forEach(i -> authorities.add(new SimpleGrantedAuthority(i.getName())));
         return List.of(new SimpleGrantedAuthority(authorities.toString()));
-    }
-
-    public User(String firstName, String lastName, String DOB, String gender, String email,Set<Roles> roles,String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.DOB = DOB;
-        this.gender = gender;
-        this.roles = roles;
-        this.email = email;
-        this.password = password;
     }
 
     @Override
