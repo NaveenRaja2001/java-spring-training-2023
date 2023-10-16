@@ -1,10 +1,11 @@
 package com.example.demo.serviceImpl;
 
+import com.example.demo.constants.ErrorConstants;
+import com.example.demo.constants.SuccessConstants;
 import com.example.demo.entities.Appointments;
 import com.example.demo.entities.Slots;
 import com.example.demo.entities.User;
 import com.example.demo.exception.HelperAppException;
-import com.example.demo.projection.AppointmentView;
 import com.example.demo.repository.AppointmentRepository;
 import com.example.demo.repository.HelperDetailsRepository;
 import com.example.demo.repository.SlotRepository;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +51,7 @@ public class ResidentServiceImpl implements ResidentService {
                         return timeSlot;
                     })
                     .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return timeSlots;
@@ -82,7 +82,7 @@ public class ResidentServiceImpl implements ResidentService {
                         return helperDetails;
                     })
                     .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return availableHelper;
@@ -99,14 +99,14 @@ public class ResidentServiceImpl implements ResidentService {
                     .map(Appointments::getHelperId)
                     .collect(Collectors.toList());
             if (bookedHelpersId.contains(bookingResquest.getHelperId())) {
-                throw new HelperAppException("Helper is not available at the moment");
+                throw new HelperAppException(ErrorConstants.HELPER_ALREADY_BOOKED_ERROR);
             }
-            User resident = userRepository.findById(bookingResquest.getUserId()).orElseThrow(() -> new HelperAppException("Resident Id is not found"));
-            User helper = userRepository.findById(bookingResquest.getHelperId()).orElseThrow(() -> new HelperAppException("Helper Id is not found"));
-            if (helper.getStatus().equals("requested")) {
-                throw new HelperAppException("Helper is in active");
+            User resident = userRepository.findById(bookingResquest.getUserId()).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            User helper = userRepository.findById(bookingResquest.getHelperId()).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
+            if (helper.getStatus().equals(SuccessConstants.STATUS_REQUESTED)) {
+                throw new HelperAppException(ErrorConstants.INACTIVE_HELPER);
             }
-            Slots timeSlot = slotRepository.findById(bookingResquest.getTimeSlotId()).orElseThrow(() -> new HelperAppException("Timeslot Id is not found"));
+            Slots timeSlot = slotRepository.findById(bookingResquest.getTimeSlotId()).orElseThrow(() -> new HelperAppException(ErrorConstants.INVALID_TIMESLOT_ERROR));
             Appointments appointments = new Appointments(bookingResquest.getTimeSlotId(), resident, timeSlot, LocalDate.parse(bookingResquest.getDate()), bookingResquest.getHelperId());
             appointmentRepository.save(appointments);
 
@@ -119,7 +119,7 @@ public class ResidentServiceImpl implements ResidentService {
             bookingResponse.setHelperId(appointments.getHelperId());
             bookingResponse.setUserId(appointments.getResident().getId());
             bookingResponse.setDate(appointments.getLocalDate().toString());
-        } catch (Exception e) {
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return bookingResponse;

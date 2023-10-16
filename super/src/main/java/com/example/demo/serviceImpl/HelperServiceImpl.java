@@ -1,5 +1,6 @@
 package com.example.demo.serviceImpl;
 
+import com.example.demo.constants.ErrorConstants;
 import com.example.demo.entities.Appointments;
 import com.example.demo.exception.HelperAppException;
 import com.example.demo.repository.AppointmentRepository;
@@ -23,7 +24,7 @@ public class HelperServiceImpl implements HelperService {
         try{
             List<Appointments> appointments=appointmentRepository.findByHelperId(helperId);
             if(appointments.isEmpty()){
-                throw new HelperAppException("currently there is no appointments for the helper");
+                throw new HelperAppException(ErrorConstants.NO_APPOINTMENTS_EXISTS_ERROR);
             }
             helperBookingResponse = appointments.stream()
                     .map(appointment -> {
@@ -42,7 +43,7 @@ public class HelperServiceImpl implements HelperService {
                     })
                     .collect(Collectors.toList());
 
-        }catch (Exception e){
+        }catch (HelperAppException e){
             throw new HelperAppException(e.getMessage());
         }
 

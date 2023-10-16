@@ -32,4 +32,11 @@ public class HelperDetails {
         this.skill=skill;
         this.status=status;
     }
+
+    public HelperDetails(Integer id, Long phonenumber, String skill, String status) {
+        this.id=id;
+        this.phoneNumber=phonenumber;
+        this.skill=skill;
+        this.status=status;
+    }
 }

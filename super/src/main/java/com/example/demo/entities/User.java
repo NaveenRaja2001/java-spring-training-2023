@@ -1,6 +1,11 @@
 package com.example.demo.entities;
 
+import com.example.demo.constants.SuccessConstants;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,10 +32,18 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull
+    @Pattern(regexp = SuccessConstants.USERNAME_PATTERN, message = SuccessConstants.USERNAME_PATTERN_MESSAGE )
     private String firstName;
     private String lastName;
+
     private String DOB;
+
+
     private String gender;
+
+    @NotNull
+    @Pattern(regexp = SuccessConstants.EMAIL_PATTERN,message = SuccessConstants.EMAIL_PATTERN_MESSAGE)
     private String email;
     private String password;
 
@@ -59,6 +72,17 @@ public class User implements UserDetails {
 //    }
 
     public User(String firstName, String lastName, String DOB, String gender, String email, String password, String status) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.DOB = DOB;
+        this.gender = gender;
+        this.email = email;
+        this.password = password;
+        this.status = status;
+    }
+
+    public User(Integer id,String firstName, String lastName, String DOB, String gender, String email, String password, String status) {
+        this.id=id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.DOB = DOB;

@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.constants.SuccessConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,11 @@ public class SecurityConfiguration {
         http
                 .sessionManagement(S -> S.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
-                .authorizeHttpRequests(e -> e.requestMatchers("/**").permitAll()
-//                        .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                .authorizeHttpRequests(e -> e.requestMatchers("/resident/**").permitAll()
+                        .requestMatchers("/helpers/**").permitAll()
+                        .requestMatchers("/registration/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/admin/**").hasAnyAuthority(SuccessConstants.ROLE_ADMIN)
 //                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_BUSINESS_USER")
 //                        .requestMatchers("/businessUser/**").hasAnyAuthority("ROLE_BUSINESS_USER")
 //                        .requestMatchers("/api/**").hasAnyAuthority("ROLE_USER")

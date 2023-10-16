@@ -1,12 +1,15 @@
 package com.example.demo.serviceImpl;
 
 
-import com.example.demo.config.AuthenticationRequest;
-import com.example.demo.config.AuthenticationResponse;
 import com.example.demo.config.JwtService;
+import com.example.demo.constants.ErrorConstants;
+import com.example.demo.constants.SuccessConstants;
 import com.example.demo.entities.Roles;
+import com.example.demo.exception.HelperAppException;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.openapitools.model.AuthenticationRequest;
+import org.openapitools.model.AuthenticationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,11 +39,15 @@ public class AuthenticationService {
 
 
 
-    public ResponseEntity<?> authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         try {
-            var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            var user = userRepository.findByEmail(request.getEmail()).orElseThrow(()->new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            if (SuccessConstants.STATUS_REQUESTED.equals(user.getStatus())) {
+                throw new HelperAppException(ErrorConstants.USER_NOT_APPROVED_MESSAGE);
+            }
             List<Roles> role = null;
             if (user != null) {
                 role = List.of(user.getRoles());
@@ -54,15 +61,15 @@ public class AuthenticationService {
 //            user.setRoles(set);
 //            set.stream().forEach(i -> authorities.add(new SimpleGrantedAuthority(i.getName())));
             var jwtAccessToken = jwtService.genTok(user, authorities);
-            var jwtRefreshToken = jwtService.generateRefreshToken(user, authorities);
-            return ResponseEntity.ok(AuthenticationResponse.builder().access_token(jwtAccessToken).refresh_token(jwtRefreshToken).email(user.getEmail()).user_name(user.getFirstName()).build());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            authenticationResponse.setEmail(user.getEmail());
+            authenticationResponse.setAccessToken(jwtAccessToken);
+            authenticationResponse.setMessage(SuccessConstants.AUTHENTICATION_SUCCESSFULL_MESSSAGE);
+        } catch (RuntimeException e) {
+            authenticationResponse.setMessage(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new HelperAppException("Authentication failed: " + e.getMessage());
         }
+        return authenticationResponse;
     }
 
 
