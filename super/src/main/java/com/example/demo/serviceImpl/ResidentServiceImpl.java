@@ -22,6 +22,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class that handles Resident-related endpoints
+ *
+ * @Author Naveen Raja
+ */
 @Service
 public class ResidentServiceImpl implements ResidentService {
     @Autowired
@@ -36,7 +41,10 @@ public class ResidentServiceImpl implements ResidentService {
     @Autowired
     UserRepository userRepository;
 
-
+    /**
+     *  This method gives the available timeslots
+     * @return List of Timeslot
+     */
     @Override
     public List<TimeSlot> getAllTimeslots() {
         List<TimeSlot> timeSlots = null;
@@ -57,13 +65,17 @@ public class ResidentServiceImpl implements ResidentService {
         return timeSlots;
     }
 
+    /**
+     *  This method return the list of available  helpers
+     * @param date
+     * @param timeslotId
+     * @return List of Helper
+     */
     @Override
     public List<HelperDetails> getAllAvailableHelpers(String date, Integer timeslotId) {
-
-//List<com.example.demo.entities.HelperDetails> helper=helperDetailsRepository.findByStatusNot("string");
-//List<Integer> availableHelperId=appointmentRepository.findAllAvailableHelper(LocalDate.parse(date),timeslotId);
         List<HelperDetails> availableHelper;
         try {
+            Slots timeSlot=slotRepository.findById(timeslotId).orElseThrow(()->new HelperAppException(ErrorConstants.INVALID_TIMESLOT_ERROR));
             List<Appointments> bookedHelpers = appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse(date), timeslotId);
             List<Integer> bookedHelpersId = bookedHelpers.stream()
                     .map(Appointments::getHelperId)
@@ -72,7 +84,8 @@ public class ResidentServiceImpl implements ResidentService {
                 bookedHelpersId.add(0);
             }
             List<com.example.demo.entities.HelperDetails> availableHelperDetails = helperDetailsRepository.findByUser_idNotIn(bookedHelpersId);
-            availableHelper = availableHelperDetails.stream()
+           availableHelper = availableHelperDetails.stream()
+                    .filter(h -> h.getUser().getStatus().equals(SuccessConstants.STATUS_APPROVED))
                     .map(h -> {
                         HelperDetails helperDetails = new HelperDetails();
                         helperDetails.setId(h.getUser().getId());
@@ -88,13 +101,17 @@ public class ResidentServiceImpl implements ResidentService {
         return availableHelper;
     }
 
+    /**
+     * This method is used to book appointment with helper
+     * @param bookingResquest
+     * @return BookingResponse
+     */
     @Override
     public BookingResponse bookHelper(BookingResquest bookingResquest) {
         BookingResponse bookingResponse;
         try {
-
-
             List<Appointments> bookedHelpers = appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse(bookingResquest.getDate()), bookingResquest.getTimeSlotId());
+
             List<Integer> bookedHelpersId = bookedHelpers.stream()
                     .map(Appointments::getHelperId)
                     .collect(Collectors.toList());
@@ -107,9 +124,8 @@ public class ResidentServiceImpl implements ResidentService {
                 throw new HelperAppException(ErrorConstants.INACTIVE_HELPER);
             }
             Slots timeSlot = slotRepository.findById(bookingResquest.getTimeSlotId()).orElseThrow(() -> new HelperAppException(ErrorConstants.INVALID_TIMESLOT_ERROR));
-            Appointments appointments = new Appointments(bookingResquest.getTimeSlotId(), resident, timeSlot, LocalDate.parse(bookingResquest.getDate()), bookingResquest.getHelperId());
+            Appointments appointments = new Appointments(resident, timeSlot, LocalDate.parse(bookingResquest.getDate()), bookingResquest.getHelperId());
             appointmentRepository.save(appointments);
-
             TimeSlot bookedTimeSlot = new TimeSlot();
             bookedTimeSlot.setId(timeSlot.getId());
             bookedTimeSlot.setStarttime(timeSlot.getStartTime().toString());

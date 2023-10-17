@@ -250,7 +250,7 @@ paths:
         #<-- Endpoint for creation of resident user:END -->
 
         #<-- Endpoint for creation of resident user:START -->
-  /resident/available:
+  /resident/available-helpers:
     get:
       tags:
         - resident
@@ -295,7 +295,7 @@ paths:
 
         #<-- Endpoint for creation of resident user:END -->
         #<-- Endpoint for creation of helper user:START -->
-  /resident/booking:
+  /resident/booking-helpers:
     post:
       tags:
         - resident

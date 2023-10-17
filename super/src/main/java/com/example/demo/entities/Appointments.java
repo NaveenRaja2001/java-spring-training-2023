@@ -33,4 +33,11 @@ public class Appointments {
     private LocalDate localDate;
 
     private Integer helperId;
+
+    public Appointments(User resident, Slots timeSlot, LocalDate localDate, Integer helperId) {
+        this.resident=resident;
+        this.slots=timeSlot;
+        this.localDate=localDate;
+        this.helperId=helperId;
+    }
 }

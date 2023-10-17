@@ -25,6 +25,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test for resident Service
+ * @Author Naveen Raja
+ */
 @ExtendWith(MockitoExtension.class)
 class ResidentServiceImplTest {
     @InjectMocks
@@ -42,6 +46,9 @@ class ResidentServiceImplTest {
     @Mock
     UserRepository userRepository;
 
+    /**
+     * Test method for retrieve all timeslots
+     */
     @Test
     void getAllTimeslots() {
         TimeSlot response = new TimeSlot();
@@ -54,6 +61,9 @@ class ResidentServiceImplTest {
 
     }
 
+    /**
+     * Test method for retrieve all available Helpers
+     */
     @Test
     void getAllAvailableHelpers() {
         HelperDetails response = new HelperDetails();
@@ -67,10 +77,18 @@ class ResidentServiceImplTest {
         User newUser = new User("Naveen", "N", "19.10.2001", "male", "naveen@gmail.com", "pass", "approved");
         newUser.setId(1);
         com.example.demo.entities.HelperDetails helperDetails = new com.example.demo.entities.HelperDetails(1, newUser, 80732423576L, "plumber", "active");
+        Slots timeSlot=new Slots();
+        timeSlot.setId(1);
+        timeSlot.setStartTime(LocalTime.parse("14:00"));
+        timeSlot.setEndTime(LocalTime.parse("15:00"));
+        when(slotRepository.findById(1)).thenReturn(Optional.of(timeSlot));
         when(helperDetailsRepository.findByUser_idNotIn(List.of(22))).thenReturn(List.of(helperDetails));
         assertEquals(residentService.getAllAvailableHelpers("2018-12-22", 1), List.of(response));
     }
 
+    /**
+     * Test method to book appointment with helper
+     */
     @Test
     void bookHelper() {
         BookingResquest bookingResquest=new BookingResquest();
