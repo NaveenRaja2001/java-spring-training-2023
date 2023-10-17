@@ -2,7 +2,6 @@ package com.example.demo.repository;
 
 
 import com.example.demo.entities.Appointments;
-import com.example.demo.projection.AppointmentView;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +20,26 @@ public interface AppointmentRepository extends JpaRepository<Appointments,Intege
     List<Appointments> findHelperIdByLocalDateAndSlots_id(LocalDate parse, Integer timeslotId);
 
     List<Appointments> findByHelperId(Integer helperId);
+
+    List<Appointments> findByhelperId(Integer userId);
+
+    void deleteAllByhelperId(Integer userId);
+
+    void deleteAllByHelperId(Integer userId);
+
+    List<Appointments> findAllByhelperId(Integer userId);
+
+    List<Appointments> findAllByHelperId(Integer userId);
+
+//    List<Appointments> findAllByUserId(Integer userId);
+
+//    List<Appointments> findAllByUser_id(Integer userId);
+
+    List<Appointments> findAllByResident_id(Integer userId);
+//
+//    void deleteAllByUser_Id(Integer userId);
+//
+//    void deleteAllByResidentUser_id(Integer userId);
+//
+//    void deleteAllByuser_id(Integer userId);
 }
