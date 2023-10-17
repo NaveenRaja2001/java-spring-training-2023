@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.service.ResidentService;
-import jakarta.persistence.Id;
 import org.openapitools.api.ResidentApi;
 import org.openapitools.model.BookingResponse;
 import org.openapitools.model.BookingResquest;
@@ -12,26 +11,48 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 
+/**
+ * Controller class that handles Resident-related endpoints
+ *
+ * @Author Naveen Raja
+ */
 @RestController
 public class ResidentController implements ResidentApi {
 
     @Autowired
     ResidentService residentService;
 
-
+    /**
+     * This endpoint is to booked appointment with available helpers
+     *
+     * @param bookingResquest
+     * @return BookingResponse
+     */
     @Override
     public ResponseEntity<BookingResponse> bookHelper(BookingResquest bookingResquest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(residentService.bookHelper(bookingResquest));
     }
 
+    /**
+     * This endpoint to used to retrieves the available helpers
+     *
+     * @param date       (required)
+     * @param timeslotId (required)
+     * @return List of HelperDetails
+     */
+
     @Override
     public ResponseEntity<List<HelperDetails>> getAllAvailableHelpers(String date, Integer timeslotId) {
-       return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllAvailableHelpers(date,timeslotId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllAvailableHelpers(date, timeslotId));
     }
 
+    /**
+     * This endpoint is used to retrieves all timeslots
+     *
+     * @return List of TimeSlot
+     */
     @Override
     public ResponseEntity<List<TimeSlot>> getAllTimeslots() {
         return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslots());

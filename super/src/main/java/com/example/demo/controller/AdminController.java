@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller class that handles Admin-related endpoints
+ *
+ * @Author Naveen Raja
+ */
 @RestController
 public class AdminController implements AdminApi {
 
@@ -22,22 +27,44 @@ public class AdminController implements AdminApi {
     @Autowired
     UserService userService;
 
+    /**
+     * This endpoint is used to approve the requested User
+     *
+     * @param userId
+     * @return UserCreationResponse
+     */
     @Override
     public ResponseEntity<UserCreationResponse> approveUser(Integer userId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.approveUser(userId));
     }
 
+    /**
+     * This endpoint used to add helper directly by the admin
+     *
+     * @param helperUserCreationRequest
+     * @return UserCreationResponse
+     */
     @Override
     public ResponseEntity<UserCreationResponse> createHelperAndApprove(HelperUserCreationRequest helperUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createHelperUser(helperUserCreationRequest));
     }
 
+    /**
+     * This endpoint used to add resident directly by the admin
+     *
+     * @param residentUserCreationRequest
+     * @return UserCreationResponse
+     */
     @Override
     public ResponseEntity<UserCreationResponse> createResidentAndApprove(ResidentUserCreationRequest residentUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createResidentUser(residentUserCreationRequest));
     }
 
-
+    /**
+     * This endpoint is used to retrieve all requested User
+     *
+     * @return List<UserCreationResponse>
+     */
     @Override
     public ResponseEntity<List<UserCreationResponse>> getAllRequestedUser() {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.getAllRequestedUser());
@@ -57,8 +84,6 @@ public class AdminController implements AdminApi {
     public ResponseEntity<UserCreationResponse> deleteUsers(Integer userId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.deleteUsers(userId));
     }
-
-
 
 
 }

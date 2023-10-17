@@ -15,12 +15,17 @@ import org.openapitools.model.ResidentUserCreationRequest;
 import org.openapitools.model.RoleResponse;
 import org.openapitools.model.UserCreationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+/**
+ * Service class that handles Admin-related endpoints
+ *
+ * @Author Naveen Raja
+ */
 @Service
 public class AdminServiceImpl implements AdminService {
     @Autowired
@@ -34,6 +39,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    /**
+     * This method is used to approve the requested User
+     * @param userId
+     * @return UserCreationResponse
+     */
     @Override
     public UserCreationResponse approveUser(Integer userId) {
         UserCreationResponse userCreationResponse = new UserCreationResponse();
@@ -69,6 +80,10 @@ public class AdminServiceImpl implements AdminService {
         return userCreationResponse;
     }
 
+    /**
+     *  This method is used to retrieve all the requested User
+     * @return List of UserCreationResponse
+     */
     @Override
     public List<UserCreationResponse> getAllRequestedUser() {
         List<UserCreationResponse> requestedUserResponse = null;

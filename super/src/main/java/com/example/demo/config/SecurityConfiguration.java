@@ -32,7 +32,7 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(e -> e.requestMatchers("/resident/**").permitAll()
                         .requestMatchers("/helpers/**").permitAll()
-                        .requestMatchers("/registration/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority(SuccessConstants.ROLE_ADMIN)
 //                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_BUSINESS_USER")

@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:8081
 tags:
-  - name: registration
+  - name: user
     description: User Service API endpoints
   - name: admin
     description: Admin Service API endpoints
@@ -19,10 +19,10 @@ paths:
 
 
   #<-- Endpoint for creation of resident user:START -->
-  /registration/residents:
+  /user/registration-residents:
     post:
       tags:
-        - registration
+        - user
       summary: Endpoint for creation of resident user
       operationId: createResidentUser
       requestBody:
@@ -59,10 +59,10 @@ paths:
     #<-- Endpoint for creation of resident user:END -->
 
     #<-- Endpoint for creation of helper user:START -->
-  /registration/helpers:
+  /user/registration-helpers:
     post:
       tags:
-        - registration
+        - user
       summary: Endpoint for creation of helper user
       operationId: createHelperUser
       requestBody:
@@ -451,10 +451,10 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
 
     #<-- Endpoint for creation of resident user:END -->
-  /auth/login:
+  /user/login:
     post:
       tags:
-        - registration
+        - user
       summary: Authenticate User
       operationId: loginUser
       requestBody:

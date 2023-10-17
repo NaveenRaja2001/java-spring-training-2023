@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.constants.SuccessConstants;
 import com.example.demo.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test for User Controller
+ *
+ * @Author Naveen Raja
+ */
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
     @InjectMocks
@@ -22,10 +28,12 @@ class UserControllerTest {
     @Mock
     UserServiceImpl userService;
 
-
+    /**
+     * Test for creating the helper
+     */
     @Test
     void createHelperUser() {
-        UserCreationResponse response=new UserCreationResponse();
+        UserCreationResponse response = new UserCreationResponse();
         response.setId(1);
         response.setDOB("12.01.2001");
         response.setEmail("naveen@gmail.com");
@@ -42,7 +50,7 @@ class UserControllerTest {
         response.setPassword("pass");
         response.setStatus("requested");
 
-        HelperUserCreationRequest helperUserCreationRequest=new HelperUserCreationRequest();
+        HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
         helperUserCreationRequest.setFirstName("Naveen");
         helperUserCreationRequest.setLastName("N");
         helperUserCreationRequest.setDOB("12.01.2001");
@@ -50,20 +58,23 @@ class UserControllerTest {
         helperUserCreationRequest.setEmail("naveen@gmail.com");
         helperUserCreationRequest.setPassword("pass");
 
-        HelperDetails helperDetails=new HelperDetails();
+        HelperDetails helperDetails = new HelperDetails();
         helperDetails.setSkill("plumber");
         helperDetails.setPhonenumber(808764563L);
         helperDetails.setStatus("active");
 
         helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
         when(userService.createHelperUser(helperUserCreationRequest)).thenReturn(response);
-        assertEquals(userService.createHelperUser(helperUserCreationRequest),response);
+        assertEquals(userService.createHelperUser(helperUserCreationRequest), response);
 
     }
 
+    /**
+     * Test for creating the resident
+     */
     @Test
     void createResidentUser() {
-        UserCreationResponse response=new UserCreationResponse();
+        UserCreationResponse response = new UserCreationResponse();
         response.setId(1);
         response.setDOB("12.01.2001");
         response.setEmail("naveen@gmail.com");
@@ -80,7 +91,7 @@ class UserControllerTest {
         response.setPassword("pass");
         response.setStatus("requested");
 
-        ResidentUserCreationRequest residentUserCreationRequest=new ResidentUserCreationRequest();
+        ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
         residentUserCreationRequest.setDOB("12.01.2001");
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
@@ -89,6 +100,23 @@ class UserControllerTest {
         residentUserCreationRequest.setLastName("N");
         residentUserCreationRequest.setPassword("pass");
         when(userService.createResidentUser(residentUserCreationRequest)).thenReturn(response);
-        assertEquals(userService.createResidentUser(residentUserCreationRequest),response);
+        assertEquals(userService.createResidentUser(residentUserCreationRequest), response);
+    }
+
+    /**
+     * Test for login the user
+     */
+    @Test
+    void loginUser() {
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest();
+        authenticationRequest.setEmail("naveen@gmail.com");
+        authenticationRequest.setPassword("pass");
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setEmail("naveen@gmail.com");
+        authenticationResponse.setMessage(SuccessConstants.AUTHENTICATION_SUCCESSFULL_MESSSAGE);
+        authenticationResponse.setAccessToken("token");
+        when(userService.authenticate(authenticationRequest)).thenReturn(authenticationResponse);
+        assertEquals(userService.authenticate(authenticationRequest), authenticationResponse);
+
     }
 }
