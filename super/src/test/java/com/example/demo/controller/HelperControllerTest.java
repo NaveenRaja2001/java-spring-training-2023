@@ -14,6 +14,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+
+/**
+ * Test for helper controller endpoints
+ *
+ * @Author Naveen Raja
+ */
 @ExtendWith(MockitoExtension.class)
 class HelperControllerTest {
 @InjectMocks
@@ -22,6 +28,9 @@ HelperController helperController;
 @Mock
     HelperServiceImpl helperService;
 
+    /**
+     * Test method of retrieve all helper booking
+     */
     @Test
     void getAllHelpersBooking() {
         BookingResponse bookingResponse=new BookingResponse();

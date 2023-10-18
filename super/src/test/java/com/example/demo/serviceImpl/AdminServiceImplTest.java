@@ -3,14 +3,18 @@ package com.example.demo.serviceImpl;
 import com.example.demo.entities.*;
 import com.example.demo.repository.AppointmentRepository;
 import com.example.demo.repository.HelperDetailsRepository;
+import com.example.demo.repository.RolesRepository;
 import com.example.demo.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openapitools.model.HelperUserCreationRequest;
+import org.openapitools.model.ResidentUserCreationRequest;
 import org.openapitools.model.RoleResponse;
 import org.openapitools.model.UserCreationResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +41,12 @@ class AdminServiceImplTest {
 
     @Mock
     AppointmentRepository appointmentRepository;
+
+    @Mock
+    RolesRepository rolesRepository;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     /**
      * Test method to approve User
@@ -159,5 +169,91 @@ class AdminServiceImplTest {
         appointment.setLocalDate(LocalDate.parse("2018-12-21"));
         when(appointmentRepository.findAllByHelperId(1)).thenReturn(List.of(appointment));
         assertEquals(adminService.deleteUsers(1),deleteResponse);
+    }
+
+    /**
+     *  Test method for updating helper
+     */
+    @Test
+    void updateHelper() {
+        Roles role = new Roles(2, "HELPER", "helper");
+        User newUser=new User("Naveen","N","12.01.2001","male","naveen@gmail.com","pass","requested");
+        newUser.setId(1);
+        newUser.setRoles(role);
+        UserCreationResponse response = new UserCreationResponse();
+        response.setDOB("12.01.2001");
+        response.setEmail("naveen@gmail.com");
+        response.setGender("male");
+        response.setId(1);
+
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName("HELPER");
+        roleResponse.setDescription("helper");
+        roleResponse.setId(2);
+
+        response.setRole(List.of(roleResponse));
+        response.setFirstName("Naveen");
+        response.setLastName("N");
+        response.setStatus("requested");
+
+        HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
+        helperUserCreationRequest.setFirstName("Naveen");
+        helperUserCreationRequest.setId(1);
+        helperUserCreationRequest.setLastName("N");
+        helperUserCreationRequest.setDOB("12.01.2001");
+        helperUserCreationRequest.setGender("male");
+        helperUserCreationRequest.setEmail("naveen@gmail.com");
+
+        org.openapitools.model.HelperDetails helperDetails = new org.openapitools.model.HelperDetails();
+        helperDetails.setSkill("plumber");
+        helperDetails.setPhonenumber(808764563L);
+        helperDetails.setStatus("active");
+        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
+        when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
+        when(rolesRepository.findById(2)).thenReturn(Optional.of(role));
+        assertEquals(adminService.updateHelper(helperUserCreationRequest),response);
+    }
+
+    /**
+     *  Test method for updating resident
+     */
+    @Test
+    void updateResident() {
+        Roles role = new Roles(1, "RESIDENT", "resident");
+        User newUser=new User("Naveen","N","12.01.2001","male","naveen@gmail.com","pass","requested");
+        newUser.setId(1);
+        newUser.setRoles(role);
+        UserCreationResponse response = new UserCreationResponse();
+        response.setDOB("12.01.2001");
+        response.setEmail("naveen@gmail.com");
+        response.setGender("male");
+        response.setId(1);
+
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName("RESIDENT");
+        roleResponse.setDescription("resident");
+        roleResponse.setId(1);
+
+        response.setRole(List.of(roleResponse));
+        response.setFirstName("Naveen");
+        response.setLastName("N");
+        response.setPassword("pass");
+        response.setStatus("requested");
+
+
+        ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
+        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setId(1);
+        residentUserCreationRequest.setEmail("naveen@gmail.com");
+        residentUserCreationRequest.setGender("male");
+
+        residentUserCreationRequest.setFirstName("Naveen");
+        residentUserCreationRequest.setLastName("N");
+        residentUserCreationRequest.setPassword("pass");
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
+        when(rolesRepository.findById(1)).thenReturn(Optional.of(role));
+        assertEquals(adminService.updateResident(residentUserCreationRequest),response);
+
     }
 }

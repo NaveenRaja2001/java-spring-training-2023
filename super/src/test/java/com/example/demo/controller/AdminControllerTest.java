@@ -30,6 +30,9 @@ class AdminControllerTest {
     @Mock
     UserService userService;
 
+    /**
+     * Test method for approving User
+     */
 
     @Test
     void approveUser() {
@@ -54,6 +57,9 @@ class AdminControllerTest {
         assertEquals(expected, response);
     }
 
+    /**
+     * Test method for retrieving all requested User
+     */
     @Test
     void getAllRequestedUser() {
         UserCreationResponse userOne = new UserCreationResponse();
@@ -190,5 +196,75 @@ class AdminControllerTest {
 
         when(adminService.deleteUsers(1)).thenReturn(deleteResponse);
         assertEquals(adminService.deleteUsers(1),deleteResponse);
+    }
+
+    /**
+     *  Test method for updating helper
+     */
+    @Test
+    void updateHelper() {
+        UserCreationResponse response = new UserCreationResponse();
+        response.setDOB("12.01.2001");
+        response.setEmail("naveen@gmail.com");
+        response.setGender("male");
+
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName("HELPER");
+        roleResponse.setDescription("helper");
+        roleResponse.setId(2);
+
+        response.setRole(List.of(roleResponse));
+        response.setFirstName("Naveen");
+        response.setLastName("N");
+        response.setStatus("requested");
+
+        HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
+        helperUserCreationRequest.setFirstName("Naveen");
+        helperUserCreationRequest.setLastName("N");
+        helperUserCreationRequest.setDOB("12.01.2001");
+        helperUserCreationRequest.setGender("male");
+        helperUserCreationRequest.setEmail("naveen@gmail.com");
+
+        HelperDetails helperDetails = new HelperDetails();
+        helperDetails.setSkill("plumber");
+        helperDetails.setPhonenumber(808764563L);
+        helperDetails.setStatus("active");
+        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
+        when(adminService.updateHelper(helperUserCreationRequest)).thenReturn(response);
+        assertEquals(adminService.updateHelper(helperUserCreationRequest),response);
+
+    }
+
+    /**
+     *  Test method for updating resident
+     */
+    @Test
+    void updateResident() {
+        UserCreationResponse response = new UserCreationResponse();
+        response.setDOB("12.01.2001");
+        response.setEmail("naveen@gmail.com");
+        response.setGender("male");
+
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName("RESIDENT");
+        roleResponse.setDescription("resident");
+        roleResponse.setId(1);
+
+        response.setRole(List.of(roleResponse));
+        response.setFirstName("Naveen");
+        response.setLastName("N");
+        response.setPassword("pass");
+        response.setStatus("requested");
+
+        ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
+        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setEmail("naveen@gmail.com");
+        residentUserCreationRequest.setGender("male");
+
+        residentUserCreationRequest.setFirstName("Naveen");
+        residentUserCreationRequest.setLastName("N");
+        residentUserCreationRequest.setPassword("pass");
+        when(adminService.updateResident(residentUserCreationRequest)).thenReturn(response);
+        assertEquals(adminService.updateResident(residentUserCreationRequest),response);
     }
 }

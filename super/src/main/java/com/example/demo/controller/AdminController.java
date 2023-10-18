@@ -70,11 +70,23 @@ public class AdminController implements AdminApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.getAllRequestedUser());
     }
 
+    /**
+     * This endpoint is used to update helper
+     *
+     * @param helperUserCreationRequest (optional)
+     * @return UserCreationResponse
+     */
     @Override
     public ResponseEntity<UserCreationResponse> updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateHelper(helperUserCreationRequest));
     }
 
+    /**
+     * This endpoint is used to update resident
+     *
+     * @param residentUserCreationRequest (optional)
+     * @return UserCreationResponse
+     */
     @Override
     public ResponseEntity<UserCreationResponse> updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateResident(residentUserCreationRequest));
@@ -82,7 +94,8 @@ public class AdminController implements AdminApi {
 
     /**
      * This endpoint is used to delete the Users
-     * @param userId  (required)
+     *
+     * @param userId (required)
      * @return UserCreationResponse
      */
     @Override

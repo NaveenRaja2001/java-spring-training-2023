@@ -121,6 +121,7 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * This method is used to delete Users
+     *
      * @param userId
      * @return UserCreationResponse
      */
@@ -128,20 +129,20 @@ public class AdminServiceImpl implements AdminService {
     public UserCreationResponse deleteUsers(Integer userId) {
         UserCreationResponse deleteResponse = new UserCreationResponse();
         try {
-            Boolean isResident=false;
-            List<Appointments> appointments=new ArrayList<>();
+            Boolean isResident = false;
+            List<Appointments> appointments = new ArrayList<>();
             User requestedUser = userRepository.findById(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
             if (requestedUser.getRoles().getName().equals(SuccessConstants.ROLE_HELPER)) {
                 HelperDetails helperDetails = helperDetailsRepository.findByUser_id(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
                 helperDetailsRepository.delete(helperDetails);
-               appointments = appointmentRepository.findAllByHelperId(userId);
+                appointments = appointmentRepository.findAllByHelperId(userId);
 
             } else {
                 appointments = appointmentRepository.findAllByResident_id(userId);
-                isResident=true;
+                isResident = true;
             }
             appointmentRepository.deleteAll(appointments);
-            if (isResident){
+            if (isResident) {
                 userRepository.delete(requestedUser);
             }
             deleteResponse.setId(requestedUser.getId());
@@ -166,6 +167,12 @@ public class AdminServiceImpl implements AdminService {
         return deleteResponse;
     }
 
+    /**
+     * This method is used to update helper
+     *
+     * @param helperUserCreationRequest
+     * @return UserCreationResponse
+     */
     @Override
     public UserCreationResponse updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
         UserCreationResponse helperUpdateResponse;
@@ -176,10 +183,9 @@ public class AdminServiceImpl implements AdminService {
             }
             helperUpdateResponse = new UserCreationResponse();
 
-            User updatedUser = new User(helperUserCreationRequest.getId(), helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), SuccessConstants.STATUS_REQUESTED);
+            User updatedUser = new User(helperUserCreationRequest.getId(), helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), requestedUser.getStatus());
             RoleResponse roleResponse = new RoleResponse();
-            updatedUser.setRoles(rolesRepository.findById(2).orElseThrow());
-            userRepository.save(updatedUser);
+            updatedUser.setRoles(rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
             HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getId(), helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
             userRepository.save(updatedUser);
             helperDetails.setUser(updatedUser);
@@ -203,8 +209,41 @@ public class AdminServiceImpl implements AdminService {
         return helperUpdateResponse;
     }
 
+    /**
+     * This method to update resident
+     *
+     * @param residentUserCreationRequest
+     * @return UserCreationResponse
+     */
     @Override
     public UserCreationResponse updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
-        return null;
+        UserCreationResponse residentUpdateResponse;
+        try {
+            User requestedUser = userRepository.findById(residentUserCreationRequest.getId()).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            if (!requestedUser.getRoles().getName().equals(SuccessConstants.ROLE_RESIDENT)) {
+                throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
+            }
+            residentUpdateResponse = new UserCreationResponse();
+            User updatedUser = new User(residentUserCreationRequest.getId(), residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDOB(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), requestedUser.getStatus());
+            RoleResponse roleResponse = new RoleResponse();
+            updatedUser.setRoles(rolesRepository.findById(1).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
+
+            userRepository.save(updatedUser);
+            roleResponse.setDescription(requestedUser.getRoles().getDescription());
+            roleResponse.setId(requestedUser.getRoles().getId());
+            roleResponse.setName(requestedUser.getRoles().getName());
+            residentUpdateResponse.setRole((List.of(roleResponse)));
+            residentUpdateResponse.setId(updatedUser.getId());
+            residentUpdateResponse.setStatus(updatedUser.getStatus());
+            residentUpdateResponse.setDOB(updatedUser.getDOB());
+            residentUpdateResponse.setEmail(updatedUser.getEmail());
+            residentUpdateResponse.setGender(updatedUser.getGender());
+            residentUpdateResponse.setFirstName(updatedUser.getFirstName());
+            residentUpdateResponse.setLastName(updatedUser.getLastName());
+            residentUpdateResponse.setPassword(residentUserCreationRequest.getPassword());
+        } catch (HelperAppException e) {
+            throw new HelperAppException(e.getMessage());
+        }
+        return residentUpdateResponse;
     }
 }

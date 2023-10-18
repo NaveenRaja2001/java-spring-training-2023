@@ -17,6 +17,7 @@ public class SuccessConstants {
 
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_HELPER = "HELPER";
+    public static final String ROLE_RESIDENT = "RESIDENT";
 
     public static final String GENDER_PATTERN = "^(FEMALE|MALE)$";
     public static final String GENDER_PATTERN_MESSAGE = "Gender must be FEMALE or MALE";
