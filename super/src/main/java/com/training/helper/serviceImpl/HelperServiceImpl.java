@@ -31,19 +31,20 @@ public class HelperServiceImpl implements HelperService {
 
     /**
      * This method return the list of helper appointments
+     *
      * @param helperId
      * @return List of Booking
      */
     @Override
     public List<BookingResponse> getAllHelpersBooking(Integer helperId) {
         List<BookingResponse> helperBookingResponse = null;
-        try{
-            User helper=userRepository.findById(helperId).orElseThrow(()->new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
-            if(helper.getStatus().equals(CommonConstants.STATUS_REQUESTED) || helper.getStatus().equals(CommonConstants.STATUS_REJECTED)){
+        try {
+            User helper = userRepository.findById(helperId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            if (helper.getStatus().equals(CommonConstants.STATUS_REQUESTED) || helper.getStatus().equals(CommonConstants.STATUS_REJECTED)) {
                 throw new HelperAppException(ErrorConstants.INACTIVE_HELPER);
             }
-            List<Appointments> appointments=appointmentRepository.findByHelperId(helperId);
-            if(appointments.isEmpty()){
+            List<Appointments> appointments = appointmentRepository.findByHelperId(helperId);
+            if (appointments.isEmpty()) {
                 throw new HelperAppException(ErrorConstants.NO_APPOINTMENTS_EXISTS_ERROR);
             }
             helperBookingResponse = appointments.stream()
@@ -62,7 +63,7 @@ public class HelperServiceImpl implements HelperService {
                         return response;
                     })
                     .collect(Collectors.toList());
-        }catch (HelperAppException e){
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return helperBookingResponse;

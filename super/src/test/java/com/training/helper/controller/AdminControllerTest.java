@@ -1,6 +1,5 @@
 package com.training.helper.controller;
 
-import com.training.helper.constants.CommonConstants;
 import com.training.helper.constants.Roles;
 import com.training.helper.service.AdminService;
 import com.training.helper.service.UserService;
@@ -39,10 +38,6 @@ class AdminControllerTest {
     void approveUser() {
         UserRegistrationResponse response = new UserRegistrationResponse();
         response.setId(1);
-//        RoleResponse roleResponse = new RoleResponse();
-//        roleResponse.setName("HELPER");
-//        roleResponse.setDescription("helper");
-//        roleResponse.setId(2);
 
         response.setRole(Roles.HELPER.getValue());
         response.setFirstName("Naveen");
@@ -73,7 +68,6 @@ class AdminControllerTest {
         userOne.setRole(List.of(roleResponse));
         userOne.setFirstName("Naveen");
         userOne.setLastName("N");
-//        userOne.setPassword("pass");
         userOne.setStatus("requested");
 
         UserCreationResponse userTwo = new UserCreationResponse();
@@ -94,80 +88,6 @@ class AdminControllerTest {
     }
 
 
-    /**
-     * Test method for creating helper and approve
-     */
-//    @Test
-//    void createHelperAndApprove() {
-//        UserCreationResponse response = new UserCreationResponse();
-//        response.setId(1);
-//        response.setDOB("12.01.2001");
-//        response.setEmail("naveen@gmail.com");
-//        response.setGender("male");
-//
-//        RoleResponse roleResponse = new RoleResponse();
-//        roleResponse.setName("HELPER");
-//        roleResponse.setDescription("helper");
-//        roleResponse.setId(2);
-//
-//        response.setRole(List.of(roleResponse));
-//        response.setFirstName("Naveen");
-//        response.setLastName("N");
-////        response.setPassword("pass");
-//        response.setStatus("requested");
-//
-//        HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
-//        helperUserCreationRequest.setFirstName("Naveen");
-//        helperUserCreationRequest.setLastName("N");
-//        helperUserCreationRequest.setDOB("12.01.2001");
-//        helperUserCreationRequest.setGender("male");
-//        helperUserCreationRequest.setEmail("naveen@gmail.com");
-//        helperUserCreationRequest.setPassword("pass");
-//
-//        HelperDetails helperDetails = new HelperDetails();
-//        helperDetails.setSkill("plumber");
-//        helperDetails.setPhonenumber(808764563L);
-//        helperDetails.setStatus("active");
-//
-//        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
-//        when(userService.createHelperUser(helperUserCreationRequest)).thenReturn(response);
-//        assertEquals(userService.createHelperUser(helperUserCreationRequest), response);
-//
-//    }
-
-    /**
-     * Test method for creating resident and approve
-     */
-//    @Test
-//    void createResidentAndApprove() {
-//        UserCreationResponse response = new UserCreationResponse();
-//        response.setId(1);
-//        response.setDOB("12.01.2001");
-//        response.setEmail("naveen@gmail.com");
-//        response.setGender("male");
-//
-//        RoleResponse roleResponse = new RoleResponse();
-//        roleResponse.setName("RESIDENT");
-//        roleResponse.setDescription("resident");
-//        roleResponse.setId(2);
-//
-//        response.setRole(List.of(roleResponse));
-//        response.setFirstName("Naveen");
-//        response.setLastName("N");
-////        response.setPassword("pass");
-//        response.setStatus("requested");
-//
-//        ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
-//        residentUserCreationRequest.setDOB("12.01.2001");
-//        residentUserCreationRequest.setEmail("naveen@gmail.com");
-//        residentUserCreationRequest.setGender("male");
-//
-//        residentUserCreationRequest.setFirstName("Naveen");
-//        residentUserCreationRequest.setLastName("N");
-//        residentUserCreationRequest.setPassword("pass");
-//        when(userService.createResidentUser(residentUserCreationRequest)).thenReturn(response);
-//        assertEquals(userService.createResidentUser(residentUserCreationRequest), response);
-//    }
 
 
     /**
@@ -200,20 +120,13 @@ class AdminControllerTest {
      */
     @Test
     void updateHelper() {
-        UserCreationResponse response = new UserCreationResponse();
+        HelperUserCreationRequest response = new HelperUserCreationRequest();
         response.setDOB("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
 
-        RoleResponse roleResponse = new RoleResponse();
-        roleResponse.setName("HELPER");
-        roleResponse.setDescription("helper");
-        roleResponse.setId(2);
-
-        response.setRole(List.of(roleResponse));
         response.setFirstName("Naveen");
         response.setLastName("N");
-        response.setStatus("requested");
 
         HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
         helperUserCreationRequest.setFirstName("Naveen");
@@ -237,21 +150,13 @@ class AdminControllerTest {
      */
     @Test
     void updateResident() {
-        UserCreationResponse response = new UserCreationResponse();
+        ResidentUserCreationRequest response = new ResidentUserCreationRequest();
         response.setDOB("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
 
-        RoleResponse roleResponse = new RoleResponse();
-        roleResponse.setName("RESIDENT");
-        roleResponse.setDescription("resident");
-        roleResponse.setId(1);
-
-        response.setRole(List.of(roleResponse));
         response.setFirstName("Naveen");
         response.setLastName("N");
-//        response.setPassword("pass");
-        response.setStatus("requested");
 
         ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
         residentUserCreationRequest.setDOB("12.01.2001");
@@ -264,4 +169,6 @@ class AdminControllerTest {
         when(adminService.updateResident(residentUserCreationRequest)).thenReturn(response);
         assertEquals(adminService.updateResident(residentUserCreationRequest),response);
     }
+
+
 }

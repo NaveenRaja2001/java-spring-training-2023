@@ -32,19 +32,20 @@ import java.util.zip.DataFormatException;
 @Service
 public class ResidentServiceImpl implements ResidentService {
     @Autowired
-   private SlotRepository slotRepository;
+    private SlotRepository slotRepository;
 
     @Autowired
-   private HelperDetailsRepository helperDetailsRepository;
+    private HelperDetailsRepository helperDetailsRepository;
 
     @Autowired
-   private AppointmentRepository appointmentRepository;
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
-   private UserRepository userRepository;
+    private UserRepository userRepository;
 
     /**
-     *  This method gives the available timeslots
+     * This method gives the available timeslots
+     *
      * @return List of Timeslot
      */
     @Override
@@ -68,15 +69,16 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     /**
-     *  This method return the list of available  helpers
+     * This method return the list of available  helpers
+     *
      * @param date
      * @param timeslotId
      * @return List of Helper
      */
     @Override
-    public List<HelperDetails> getAllAvailableHelpers(String date, Integer timeslotId,String skills) {
-        List<HelperDetails> availableHelper ;
-        List<com.training.helper.entities.HelperDetails> availableHelperBySkills=new ArrayList<>();
+    public List<HelperDetails> getAllAvailableHelpers(String date, Integer timeslotId, String skills) {
+        List<HelperDetails> availableHelper;
+        List<com.training.helper.entities.HelperDetails> availableHelperBySkills = new ArrayList<>();
         try {
             Slots timeSlot = slotRepository.findById(timeslotId).orElseThrow(() -> new HelperAppException(ErrorConstants.INVALID_TIMESLOT_ERROR));
             List<Appointments> bookedHelpers = appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse(date), timeslotId);
@@ -88,10 +90,10 @@ public class ResidentServiceImpl implements ResidentService {
             }
             List<com.training.helper.entities.HelperDetails> availableHelperDetails = helperDetailsRepository.findByUser_idNotIn(bookedHelpersId);
 
-           if(skills!=null){
-            availableHelperDetails.removeIf(h -> !skills.equals(h.getSkill()));
-             }
-           availableHelper = availableHelperDetails.stream()
+            if (skills != null) {
+                availableHelperDetails.removeIf(h -> !skills.equals(h.getSkill()));
+            }
+            availableHelper = availableHelperDetails.stream()
                     .filter(h -> h.getUser().getStatus().equals(CommonConstants.STATUS_APPROVED))
                     .map(h -> {
                         HelperDetails helperDetails = new HelperDetails();
@@ -102,7 +104,7 @@ public class ResidentServiceImpl implements ResidentService {
                         return helperDetails;
                     })
                     .collect(Collectors.toList());
-           if(availableHelper.isEmpty()){
+            if (availableHelper.isEmpty()) {
                 throw new HelperAppException("No Helper is found");
             }
         } catch (HelperAppException e) {
@@ -113,6 +115,7 @@ public class ResidentServiceImpl implements ResidentService {
 
     /**
      * This method is used to book appointment with helper
+     *
      * @param bookingResquest
      * @return BookingResponse
      */
@@ -120,9 +123,9 @@ public class ResidentServiceImpl implements ResidentService {
     public BookingResponse bookHelper(BookingResquest bookingResquest) {
         BookingResponse bookingResponse;
         try {
-            LocalDate todayDate=LocalDate.now().plusDays(1);
-            if(todayDate.isAfter(LocalDate.parse(bookingResquest.getDate()))){
-                throw new HelperAppException("Booking can done only after "+todayDate.minusDays(1));
+            LocalDate todayDate = LocalDate.now().plusDays(1);
+            if (todayDate.isAfter(LocalDate.parse(bookingResquest.getDate()))) {
+                throw new HelperAppException("Booking can done only after " + todayDate.minusDays(1));
             }
 
             List<Appointments> bookedHelpers = appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse(bookingResquest.getDate()), bookingResquest.getTimeSlotId());
@@ -155,6 +158,41 @@ public class ResidentServiceImpl implements ResidentService {
         }
 
         return bookingResponse;
+    }
+
+    @Override
+    public List<BookingResponse> getAllResidentBooking(Integer residentId) {
+        List<BookingResponse> residentBookingResponse = null;
+        try{
+            User resident = userRepository.findById(residentId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            if (resident.getStatus().equals(CommonConstants.STATUS_REQUESTED) || resident.getStatus().equals(CommonConstants.STATUS_REJECTED)) {
+                throw new HelperAppException(ErrorConstants.INACTIVE_HELPER);
+            }
+            List<Appointments> appointments = appointmentRepository.findAllByResident_id(residentId);
+            if (appointments.isEmpty()) {
+                throw new HelperAppException(ErrorConstants.NO_APPOINTMENTS_EXISTS_ERROR);
+            }
+            residentBookingResponse = appointments.stream()
+                    .map(appointment -> {
+                        BookingResponse response = new BookingResponse();
+                        response.setHelperId(appointment.getHelperId());
+                        response.setDate(appointment.getLocalDate().toString());
+                        response.setUserId(appointment.getResident().getId());
+
+                        TimeSlot timeSlot = new TimeSlot();
+                        timeSlot.setStarttime(appointment.getSlots().getStartTime().toString());
+                        timeSlot.setEndtime(appointment.getSlots().getEndTime().toString());
+                        timeSlot.setId(appointment.getSlots().getId());
+                        response.setTimeslot(List.of(timeSlot));
+
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+        }
+        catch (HelperAppException e){
+            throw new HelperAppException(e.getMessage());
+        }
+        return residentBookingResponse;
     }
 
 

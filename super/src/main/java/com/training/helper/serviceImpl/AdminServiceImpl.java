@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 @Service
 public class AdminServiceImpl implements AdminService {
     @Autowired
-   private HelperDetailsRepository helperDetailsRepository;
+    private HelperDetailsRepository helperDetailsRepository;
     @Autowired
-   private AppointmentRepository appointmentRepository;
+    private AppointmentRepository appointmentRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -57,12 +57,6 @@ public class AdminServiceImpl implements AdminService {
             requestedUser.setStatus(CommonConstants.STATUS_APPROVED);
 
             userCreationResponse.setId(requestedUser.getId());
-            Roles newRoles = requestedUser.getRoles();
-//            RoleResponse roleResponse = new RoleResponse();
-//            roleResponse.setName(newRoles.getName());
-//            roleResponse.setDescription(newRoles.getDescription());
-//            roleResponse.setId(newRoles.getId());
-
             userCreationResponse.setRole(requestedUser.getRoles().getName());
             userCreationResponse.setFirstName(requestedUser.getFirstName());
             userCreationResponse.setLastName(requestedUser.getLastName());
@@ -101,9 +95,7 @@ public class AdminServiceImpl implements AdminService {
                         userCreationResponse.setRole(List.of(roleResponse));
                         userCreationResponse.setFirstName(user.getFirstName());
                         userCreationResponse.setLastName(user.getLastName());
-//                        userCreationResponse.setPassword(user.getPassword());
                         userCreationResponse.setStatus(user.getStatus());
-
                         return userCreationResponse;
                     })
                     .collect(Collectors.toList());
@@ -167,14 +159,14 @@ public class AdminServiceImpl implements AdminService {
      * @return UserCreationResponse
      */
     @Override
-    public UserCreationResponse updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
-        UserCreationResponse helperUpdateResponse;
+    public HelperUserCreationRequest updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
+        HelperUserCreationRequest helperUpdateResponse;
         try {
             User requestedUser = userRepository.findById(helperUserCreationRequest.getId()).orElseThrow(() -> new HelperAppException(ErrorConstants.HELPER_NOT_FOUND_ERROR));
             if (!requestedUser.getRoles().getName().equals(com.training.helper.constants.Roles.HELPER.getValue())) {
                 throw new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR);
             }
-            helperUpdateResponse = new UserCreationResponse();
+            helperUpdateResponse = new HelperUserCreationRequest();
 
             requestedUser.setId(helperUserCreationRequest.getId());
             requestedUser.setFirstName(helperUserCreationRequest.getFirstName());
@@ -184,28 +176,28 @@ public class AdminServiceImpl implements AdminService {
             requestedUser.setEmail(helperUserCreationRequest.getEmail());
             requestedUser.setPassword(passwordEncoder.encode(helperUserCreationRequest.getPassword()));
             requestedUser.setStatus(requestedUser.getStatus());
-            RoleResponse roleResponse = new RoleResponse();
             requestedUser.setRoles(rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
             HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getId(), helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
             userRepository.save(requestedUser);
             helperDetails.setUser(requestedUser);
             helperDetailsRepository.save(helperDetails);
 
-            roleResponse.setDescription(requestedUser.getRoles().getDescription());
-            roleResponse.setId(requestedUser.getRoles().getId());
-            roleResponse.setName(requestedUser.getRoles().getName());
-            helperUpdateResponse.setRole((List.of(roleResponse)));
             helperUpdateResponse.setId(requestedUser.getId());
-            helperUpdateResponse.setStatus(requestedUser.getStatus());
             helperUpdateResponse.setDOB(requestedUser.getDOB());
             helperUpdateResponse.setEmail(requestedUser.getEmail());
             helperUpdateResponse.setGender(requestedUser.getGender());
             helperUpdateResponse.setFirstName(requestedUser.getFirstName());
             helperUpdateResponse.setLastName(requestedUser.getLastName());
+            helperUpdateResponse.setPassword(helperUserCreationRequest.getPassword());
+            org.openapitools.model.HelperDetails updatedHelperDetails=new org.openapitools.model.HelperDetails();
+            updatedHelperDetails.setStatus(helperDetails.getStatus());
+            updatedHelperDetails.setId(helperDetails.getId());
+            updatedHelperDetails.setSkill(helperDetails.getSkill());
+            updatedHelperDetails.setPhonenumber(helperDetails.getPhoneNumber());
+            helperUpdateResponse.setHelperdetails(List.of(updatedHelperDetails));
         } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
-        }
-        catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new ConstraintViolationException(e.getConstraintViolations());
         }
         return helperUpdateResponse;
@@ -218,35 +210,31 @@ public class AdminServiceImpl implements AdminService {
      * @return UserCreationResponse
      */
     @Override
-    public UserCreationResponse updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
-        UserCreationResponse residentUpdateResponse;
+    public ResidentUserCreationRequest updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
+        ResidentUserCreationRequest residentUpdateResponse;
         try {
             User requestedUser = userRepository.findById(residentUserCreationRequest.getId()).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
             if (!requestedUser.getRoles().getName().equals(com.training.helper.constants.Roles.RESIDENT.getValue())) {
                 throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
             }
-            residentUpdateResponse = new UserCreationResponse();
+            residentUpdateResponse = new ResidentUserCreationRequest();
             User updatedUser = new User(residentUserCreationRequest.getId(), residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDOB(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), requestedUser.getStatus());
-            RoleResponse roleResponse = new RoleResponse();
             updatedUser.setRoles(rolesRepository.findById(1).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
 
             userRepository.save(updatedUser);
-            roleResponse.setDescription(requestedUser.getRoles().getDescription());
-            roleResponse.setId(requestedUser.getRoles().getId());
-            roleResponse.setName(requestedUser.getRoles().getName());
-            residentUpdateResponse.setRole((List.of(roleResponse)));
             residentUpdateResponse.setId(updatedUser.getId());
-            residentUpdateResponse.setStatus(updatedUser.getStatus());
             residentUpdateResponse.setDOB(updatedUser.getDOB());
             residentUpdateResponse.setEmail(updatedUser.getEmail());
             residentUpdateResponse.setGender(updatedUser.getGender());
             residentUpdateResponse.setFirstName(updatedUser.getFirstName());
             residentUpdateResponse.setLastName(updatedUser.getLastName());
+            residentUpdateResponse.setPassword(residentUserCreationRequest.getPassword());
         } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return residentUpdateResponse;
     }
+
     /**
      * This method is used to reject the requested User
      *
@@ -258,13 +246,13 @@ public class AdminServiceImpl implements AdminService {
         UserRegistrationResponse rejectResponse;
         try {
             User requestedUser = userRepository.findById(id).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
-            if(requestedUser.getStatus().equals(CommonConstants.STATUS_APPROVED) || requestedUser.getStatus().equals(CommonConstants.STATUS_REJECTED)){
+            if (requestedUser.getStatus().equals(CommonConstants.STATUS_APPROVED) || requestedUser.getStatus().equals(CommonConstants.STATUS_REJECTED)) {
                 throw new HelperAppException("User is already approved or rejected");
             }
             requestedUser.setStatus(CommonConstants.STATUS_REJECTED);
 
             userRepository.save(requestedUser);
-            rejectResponse=new UserRegistrationResponse();
+            rejectResponse = new UserRegistrationResponse();
             rejectResponse.setId(requestedUser.getId());
 
             rejectResponse.setRole(requestedUser.getRoles().getName());
@@ -272,8 +260,7 @@ public class AdminServiceImpl implements AdminService {
             rejectResponse.setLastName(requestedUser.getLastName());
             rejectResponse.setStatus(requestedUser.getStatus());
             userRepository.save(requestedUser);
-        }
-        catch (HelperAppException e){
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return rejectResponse;

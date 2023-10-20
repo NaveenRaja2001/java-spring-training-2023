@@ -12,6 +12,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Class FOR global exception
+ *
+ * @Author Naveen Raja
+ */
 @RestControllerAdvice
 public class HelperAppExceptionHandler {
 

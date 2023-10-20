@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openapitools.model.*;
 
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -30,62 +29,16 @@ class UserControllerTest {
     UserServiceImpl userService;
 
     /**
-     * Test for creating the helper
-     */
-//    @Test
-//    void createHelperUser() {
-//        UserCreationResponse response = new UserCreationResponse();
-//        response.setId(1);
-//        response.setDOB("12.01.2001");
-//        response.setEmail("naveen@gmail.com");
-//        response.setGender("male");
-//
-//        RoleResponse roleResponse = new RoleResponse();
-//        roleResponse.setName("HELPER");
-//        roleResponse.setDescription("helper");
-//        roleResponse.setId(2);
-//
-//        response.setRole(List.of(roleResponse));
-//        response.setFirstName("Naveen");
-//        response.setLastName("N");
-////        response.setPassword("pass");
-//        response.setStatus("requested");
-//
-//        HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
-//        helperUserCreationRequest.setFirstName("Naveen");
-//        helperUserCreationRequest.setLastName("N");
-//        helperUserCreationRequest.setDOB("12.01.2001");
-//        helperUserCreationRequest.setGender("male");
-//        helperUserCreationRequest.setEmail("naveen@gmail.com");
-//        helperUserCreationRequest.setPassword("pass");
-//
-//        HelperDetails helperDetails = new HelperDetails();
-//        helperDetails.setSkill("plumber");
-//        helperDetails.setPhonenumber(808764563L);
-//        helperDetails.setStatus("active");
-//
-//        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
-//        when(userService.createHelperUser(helperUserCreationRequest)).thenReturn(response);
-//        assertEquals(userService.createHelperUser(helperUserCreationRequest), response);
-//
-//    }
-
-    /**
      * Test for creating the resident
      */
     @Test
     void createResidentUser() {
         UserRegistrationResponse response = new UserRegistrationResponse();
         response.setId(1);
-//        RoleResponse roleResponse = new RoleResponse();
-//        roleResponse.setName("RESIDENT");
-//        roleResponse.setDescription("resident");
-//        roleResponse.setId(2);
 
         response.setRole(Roles.RESIDENT.getValue());
         response.setFirstName("Naveen");
         response.setLastName("N");
-//        response.setPassword("pass");
         response.setStatus("requested");
 
         UserRegistrationRequest residentUserCreationRequest = new UserRegistrationRequest();

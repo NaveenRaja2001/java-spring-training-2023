@@ -393,7 +393,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCreationResponse'
+                $ref: '#/components/schemas/HelperUserCreationRequest'
         '400':
           description: 400 BAD REQUEST
           content:
@@ -434,7 +434,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCreationResponse'
+                $ref: '#/components/schemas/ResidentUserCreationRequest'
         '400':
           description: 400 BAD REQUEST
           content:
@@ -681,7 +681,46 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
 
       #<-- Endpoint for creation of helper user:END -->
+    #<-- Endpoint for creation of resident user:START -->
+  /resident/booking:
+    get:
+      tags:
+        - resident
+      summary: Endpoint for retrieving resident booking
+      parameters:
+        - in: query
+          name: residentId
+          schema:
+            type: integer
+          required: true
+      operationId: getAllResidentBooking
+      responses:
+        '201':
+          description: 201 CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelperBookingResponse'
+        '400':
+          description: 400 BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: 401 UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: 500 INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
+        #<-- Endpoint for creation of resident user:END -->
 components:
   schemas:
 

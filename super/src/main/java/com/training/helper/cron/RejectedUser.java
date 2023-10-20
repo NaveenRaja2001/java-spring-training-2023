@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * This cron class run every 12am to delete the rejected user
+ *
+ * @Author Naveen Raja
+ */
 @Component
 public class RejectedUser {
     @Autowired
@@ -16,8 +21,8 @@ public class RejectedUser {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void fixedRateSch() {
-     List<User> rejectedUser=userRepository.findAllByStatus(CommonConstants.STATUS_REJECTED);
-     userRepository.deleteAll(rejectedUser);
+        List<User> rejectedUser = userRepository.findAllByStatus(CommonConstants.STATUS_REJECTED);
+        userRepository.deleteAll(rejectedUser);
     }
 }
 

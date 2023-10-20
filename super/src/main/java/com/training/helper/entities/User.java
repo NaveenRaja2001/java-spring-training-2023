@@ -1,7 +1,15 @@
 package com.training.helper.entities;
 
 import com.training.helper.constants.CommonConstants;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -16,6 +24,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Bean class for user
+ *
+ * @Author Naveen Raja
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,25 +41,25 @@ public class User implements UserDetails {
     private Integer id;
 
     @NotNull(message = CommonConstants.REQUIRED_USERNAME)
-    @Pattern(regexp = CommonConstants.USERNAME_PATTERN, message = CommonConstants.USERNAME_PATTERN_MESSAGE )
+    @Pattern(regexp = CommonConstants.USERNAME_PATTERN, message = CommonConstants.USERNAME_PATTERN_MESSAGE)
     private String firstName;
     private String lastName;
 
     @NotNull(message = CommonConstants.REQUIRED_DOB)
-    @Pattern(regexp = CommonConstants.DOB_PATTERN,message = CommonConstants.DOB_PATTERN_MESSAGE)
+    @Pattern(regexp = CommonConstants.DOB_PATTERN, message = CommonConstants.DOB_PATTERN_MESSAGE)
     private String DOB;
 
-    @Pattern(regexp = "^(?:male|female|other)$",message = "male // female // other")
+    @Pattern(regexp = "^(?:male|female|other)$", message = "male // female // other")
     private String gender;
 
     @NotNull(message = CommonConstants.REQUIRED_EMAIL)
-    @Pattern(regexp = CommonConstants.EMAIL_PATTERN,message = CommonConstants.EMAIL_PATTERN_MESSAGE)
+    @Pattern(regexp = CommonConstants.EMAIL_PATTERN, message = CommonConstants.EMAIL_PATTERN_MESSAGE)
     private String email;
     private String password;
 
     private String status;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH} )
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "roles_id")
     private Roles roles;
 
@@ -61,8 +74,8 @@ public class User implements UserDetails {
         this.status = status;
     }
 
-    public User(Integer id,String firstName, String lastName, String DOB, String gender, String email, String password, String status) {
-        this.id=id;
+    public User(Integer id, String firstName, String lastName, String DOB, String gender, String email, String password, String status) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.DOB = DOB;

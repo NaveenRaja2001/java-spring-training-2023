@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ *  Interface for Appointment entity
+ *
+ * @Author Naveen Raja
+ */
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointments,Integer> {
 

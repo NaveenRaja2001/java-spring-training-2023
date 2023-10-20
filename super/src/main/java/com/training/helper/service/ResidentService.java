@@ -13,4 +13,6 @@ public interface ResidentService {
     List<HelperDetails> getAllAvailableHelpers(String date,Integer timeslotId,String skills);
 
     BookingResponse bookHelper(BookingResquest bookingResquest);
+
+    List<BookingResponse> getAllResidentBooking(Integer residentId);
 }

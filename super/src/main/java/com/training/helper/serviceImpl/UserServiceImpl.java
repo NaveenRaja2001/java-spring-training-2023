@@ -76,11 +76,7 @@ public class UserServiceImpl implements UserService {
             User newUser = new User(residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDOB(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), userStatus);
             Roles newRoles = rolesRepository.findById(1).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
             newUser.setRoles(newRoles);
-//            RoleResponse roleResponse = new RoleResponse();
             userRepository.save(newUser);
-//            roleResponse.setDescription(newRoles.getDescription());
-//            roleResponse.setId(newRoles.getId());
-//            roleResponse.setName(newRoles.getName());
             residentUserCreationResponse.setRole(newRoles.getName());
             residentUserCreationResponse.setId(newUser.getId());
             residentUserCreationResponse.setStatus(newUser.getStatus());
@@ -93,52 +89,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * This method is to create a helper directly by admin or created requested by helper to admin
+     * This method is to create a user directly by admin or created requested by helper to admin
      *
      * @return UserCreationResponse
      */
-//    public UserCreationResponse createHelperUser(HelperUserCreationRequest helperUserCreationRequest) {
-//        UserCreationResponse userCreationResponse;
-//        try {
-//            if (userRepository.existsByEmail(helperUserCreationRequest.getEmail())) {
-//                throw new HelperAppException(ErrorConstants.USER_ALREADY_PRESENT);
-//            }
-//            String userStatus = CommonConstants.STATUS_REQUESTED;
-//
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication != null) {
-//                Optional<User> adminUser = userRepository.findByEmail(authentication.getName());
-//                if (adminUser.isPresent() && adminUser.get().getRoles().getName().equals(com.training.helper.constants.Roles.ADMIN.getValue())) {
-//                    userStatus = CommonConstants.STATUS_APPROVED;
-//                }
-//            }
-//            User newUser = new User(helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), userStatus);
-//            userCreationResponse = new UserCreationResponse();
-//            userCreationResponse.setDOB(newUser.getDOB());
-//            userCreationResponse.setEmail(newUser.getEmail());
-//            userCreationResponse.setGender(newUser.getGender());
-//            Roles newRoles = rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND));
-//            RoleResponse roleResponse = new RoleResponse();
-//            roleResponse.setName(newRoles.getName());
-//            roleResponse.setDescription(newRoles.getDescription());
-//            roleResponse.setId(newRoles.getId());
-//            HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
-//            userRepository.save(newUser);
-//            helperDetails.setUser(newUser);
-//            newUser.setRoles(newRoles);
-//            helperDetailsRepository.save(helperDetails);
-//
-//            userCreationResponse.setId(newUser.getId());
-//            userCreationResponse.setRole(List.of(roleResponse));
-//            userCreationResponse.setFirstName(newUser.getFirstName());
-//            userCreationResponse.setLastName(newUser.getLastName());
-////            userCreationResponse.setPassword(helperUserCreationRequest.getPassword());
-//            userCreationResponse.setStatus(newUser.getStatus());
-//        } catch (HelperAppException e) {
-//            throw new HelperAppException(e.getMessage());
-//        }
-//        return userCreationResponse;
-//    }
     public UserRegistrationResponse createHelperUser(UserRegistrationRequest helperUserCreationRequest) {
         UserRegistrationResponse userCreationResponse;
         try {
@@ -157,10 +111,6 @@ public class UserServiceImpl implements UserService {
             User newUser = new User(helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), userStatus);
             userCreationResponse = new UserRegistrationResponse();
             Roles newRoles = rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND));
-//            RoleResponse roleResponse = new RoleResponse();
-//            roleResponse.setName(newRoles.getName());
-//            roleResponse.setDescription(newRoles.getDescription());
-//            roleResponse.setId(newRoles.getId());
             HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
             userRepository.save(newUser);
             helperDetails.setUser(newUser);
@@ -214,7 +164,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     *  This method is used to log Out User
+     * This method is used to log Out User
+     *
      * @param httpServletRequest
      * @return LogOutResponse
      */

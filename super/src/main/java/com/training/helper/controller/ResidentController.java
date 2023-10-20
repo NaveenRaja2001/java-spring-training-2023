@@ -45,12 +45,8 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<List<HelperDetails>> getAllAvailableHelpers(String date, Integer timeslotId, String skills) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllAvailableHelpers(date, timeslotId,skills));
+        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllAvailableHelpers(date, timeslotId, skills));
     }
-//    @Override
-//    public ResponseEntity<List<HelperDetails>> getAllAvailableHelpers(String date, Integer timeslotId) {
-//
-//    }
 
     /**
      * This endpoint is used to retrieves all timeslots
@@ -60,5 +56,13 @@ public class ResidentController implements ResidentApi {
     @Override
     public ResponseEntity<List<TimeSlot>> getAllTimeslots() {
         return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslots());
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<List<BookingResponse>> getAllResidentBooking(Integer residentId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllResidentBooking(residentId));
     }
 }

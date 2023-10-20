@@ -40,28 +40,6 @@ public class AdminController implements AdminApi {
     }
 
     /**
-     * This endpoint used to add helper directly by the admin
-     *
-     * @param helperUserCreationRequest
-     * @return UserCreationResponse
-     */
-//    @Override
-//    public ResponseEntity<UserCreationResponse> createHelperAndApprove(HelperUserCreationRequest helperUserCreationRequest) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createHelperUser(helperUserCreationRequest));
-//    }
-
-    /**
-     * This endpoint used to add resident directly by the admin
-     *
-     * @param residentUserCreationRequest
-     * @return UserCreationResponse
-     */
-//    @Override
-//    public ResponseEntity<UserCreationResponse> createResidentAndApprove(ResidentUserCreationRequest residentUserCreationRequest) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createResidentUser(residentUserCreationRequest));
-//    }
-
-    /**
      * This endpoint is used to retrieve all requested User
      *
      * @return List of UserCreationResponse
@@ -83,7 +61,7 @@ public class AdminController implements AdminApi {
      * @return UserCreationResponse
      */
     @Override
-    public ResponseEntity<UserCreationResponse> updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
+    public ResponseEntity<HelperUserCreationRequest> updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateHelper(helperUserCreationRequest));
     }
 
@@ -94,7 +72,7 @@ public class AdminController implements AdminApi {
      * @return UserCreationResponse
      */
     @Override
-    public ResponseEntity<UserCreationResponse> updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
+    public ResponseEntity<ResidentUserCreationRequest> updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateResident(residentUserCreationRequest));
     }
 

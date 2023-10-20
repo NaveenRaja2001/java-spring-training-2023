@@ -15,9 +15,9 @@ public interface AdminService {
 
     UserCreationResponse deleteUsers(Integer userId);
 
-    UserCreationResponse updateHelper(HelperUserCreationRequest helperUserCreationRequest);
+    HelperUserCreationRequest updateHelper(HelperUserCreationRequest helperUserCreationRequest);
 
-    UserCreationResponse updateResident(ResidentUserCreationRequest residentUserCreationRequest);
+    ResidentUserCreationRequest updateResident(ResidentUserCreationRequest residentUserCreationRequest);
 
     UserRegistrationResponse rejectUsers(Integer id);
 }

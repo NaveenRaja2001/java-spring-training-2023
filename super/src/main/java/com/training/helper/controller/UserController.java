@@ -23,59 +23,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserApi {
 
     @Autowired
-   private UserService userService;
+    private UserService userService;
 
     @Autowired
-   private HttpServletRequest httpServletRequest;
+    private HttpServletRequest httpServletRequest;
 
-
-    /**
-     * Endpoints to register helper for approval
-     *
-     * @return UserCreationResponse
-     */
-//    @Override
-//    public ResponseEntity<UserCreationResponse> createHelperUser(HelperUserCreationRequest helperUserCreationRequest) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createHelperUser(helperUserCreationRequest));
-//    }
-
-    /**
-     * Endpoints to register resident for approval
-     *
-     * @return UserCreationResponse
-     */
-//    @Override
-//    public ResponseEntity<UserCreationResponse> createResidentUser(ResidentUserCreationRequest residentUserCreationRequest) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createResidentUser(residentUserCreationRequest));
-//    }
 
     /**
      * This endpoint is used to register user
+     *
      * @param userRegistrationRequest
      * @return UserRegistrationResponse
      */
     @Override
     public ResponseEntity<UserRegistrationResponse> createUser(UserRegistrationRequest userRegistrationRequest) {
 
-//        if(userRegistrationRequest.getRole().getValue().equals(Roles.HELPER.getValue())) {
-//            if (userRegistrationRequest.getHelperdetails() == null) {
-//                throw new HelperAppException("Helper Details needed for registration");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.CREATED).body(userService.createHelperUser(userRegistrationRequest));
-//            }
-//        }
-//        else {
-//
-//            if (userRegistrationRequest.getHelperdetails() != null) {
-//                throw new HelperAppException("Helper Details is not needed for resident registration");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.CREATED).body(userService.createResidentUser(userRegistrationRequest));
-//            }
-//        }
-        if(userRegistrationRequest.getRole().getValue().equals(Roles.HELPER.getValue()) && userRegistrationRequest.getHelperdetails()==null){
+        if (userRegistrationRequest.getRole().getValue().equals(Roles.HELPER.getValue()) && userRegistrationRequest.getHelperdetails() == null) {
             throw new HelperAppException("Helper Details needed for registration");
         }
-        if(userRegistrationRequest.getRole().getValue().equals(Roles.RESIDENT.getValue()) && userRegistrationRequest.getHelperdetails()!=null){
+        if (userRegistrationRequest.getRole().getValue().equals(Roles.RESIDENT.getValue()) && userRegistrationRequest.getHelperdetails() != null) {
             throw new HelperAppException("Helper Details is not needed for resident registration");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -98,6 +64,7 @@ public class UserController implements UserApi {
 
     /**
      * Endpoints to logOut User
+     *
      * @return LogOutResponse
      */
     @Override

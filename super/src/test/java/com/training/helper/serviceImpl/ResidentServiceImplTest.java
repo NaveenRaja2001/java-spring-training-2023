@@ -70,13 +70,13 @@ class ResidentServiceImplTest {
         response.setPhonenumber(80732423576L);
         response.setSkill("plumber");
         response.setId(1);
-        response.setStatus("active");
+        response.setStatus("approved");
 
         Appointments appointments = new Appointments(1, new User(), new Slots(1, LocalTime.parse("14:00"), LocalTime.parse("15:00")), LocalDate.parse("2018-12-22"), 22);
         when(appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse("2018-12-22"), 1)).thenReturn(List.of(appointments));
         User newUser = new User("Naveen", "N", "19.10.2001", "male", "naveen@gmail.com", "pass", "approved");
         newUser.setId(1);
-        com.training.helper.entities.HelperDetails helperDetails = new com.training.helper.entities.HelperDetails(1, newUser, 80732423576L, "plumber", "active");
+        com.training.helper.entities.HelperDetails helperDetails = new com.training.helper.entities.HelperDetails(1, newUser, 80732423576L, "plumber", "approved");
         Slots timeSlot=new Slots();
         timeSlot.setId(1);
         timeSlot.setStartTime(LocalTime.parse("14:00"));

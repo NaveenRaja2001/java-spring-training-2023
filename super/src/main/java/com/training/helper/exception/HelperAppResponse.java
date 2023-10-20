@@ -1,11 +1,16 @@
 package com.training.helper.exception;
 
+/**
+ * Class HelperException Response
+ *
+ * @Author Naveen Raja
+ */
 public class HelperAppResponse {
     private int status;
     private String message;
     private String timeStamp;
 
-    public HelperAppResponse(){
+    public HelperAppResponse() {
 
     }
 

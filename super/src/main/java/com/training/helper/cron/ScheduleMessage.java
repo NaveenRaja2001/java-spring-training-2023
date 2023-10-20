@@ -48,7 +48,7 @@ public class ScheduleMessage {
                     return remainingTime <= 0;
                 })
                 .collect(Collectors.toList());
-        if(!tokenExpiredList.isEmpty()) {
+        if (!tokenExpiredList.isEmpty()) {
             tokenExpiredRepository.deleteAll(tokenExpiredList);
         }
     }

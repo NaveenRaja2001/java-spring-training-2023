@@ -1,6 +1,12 @@
 package com.training.helper.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +14,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Bean class for appointment
+ * @Author Naveen Raja
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,13 +37,8 @@ public class Appointments {
     @JoinColumn(name = "slots_id")
     private Slots slots;
 
-
-//   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//   @Past(message = "")
     private LocalDate localDate;
-//    @ManyToOne
-//    @JoinColumn(name = "helper_details_id")
-//    private HelperDetails helperDetails;
+
     private Integer helperId;
 
     public Appointments(User resident, Slots timeSlot, LocalDate localDate, Integer helperId) {

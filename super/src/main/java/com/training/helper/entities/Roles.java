@@ -1,11 +1,20 @@
 package com.training.helper.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Bean class for role
+ *
+ * @Author Naveen Raja
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -20,6 +29,6 @@ public class Roles {
     private String description;
 
     public Roles(String name) {
-        this.name=name;
+        this.name = name;
     }
 }
