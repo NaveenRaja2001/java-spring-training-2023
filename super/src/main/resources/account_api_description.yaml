@@ -134,7 +134,7 @@ paths:
 
     #<-- Endpoint for creation of resident user:START -->
   /admin/approve:
-    put:
+    patch:
       tags:
         - admin
       summary: Endpoint for approving the user
@@ -151,7 +151,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCreationResponse'
+                $ref: '#/components/schemas/UserRegistrationResponse'
         '400':
           description: 400 BAD REQUEST
           content:
@@ -215,7 +215,7 @@ paths:
       #<-- Endpoint for creation of helper user:END -->
 
       #<-- Endpoint for creation of resident user:START -->
-  /resident/timeslot:
+  /helpers/timeslot:
     get:
       tags:
         - resident
@@ -266,6 +266,10 @@ paths:
           schema:
             type: integer
           required: true
+        - in: query
+          name: skills
+          schema:
+            type: string
       operationId: getAllAvailableHelpers
       responses:
         '201':
@@ -489,7 +493,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+
   #<-- Endpoint for creation of resident user:START -->
+  /user/logout:
+    post:
+      tags:
+        - user
+      summary: logout User
+      operationId: logoutUser
+      responses:
+        '201':
+          description: 201 CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogOutResponse'
+        '400':
+          description: 400 BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: 401 UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: 500 INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /admin/residents:
     post:
       tags:
@@ -567,6 +603,85 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
 
     #<-- Endpoint for creation of helper user:END -->
+  /user/registration:
+    post:
+      tags:
+        - user
+      summary: Endpoint for creation of  user
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+      responses:
+        '201':
+          description: 201 CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistrationResponse'
+        '400':
+          description: 400 BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: 401 UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: 500 INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
+          #<-- Endpoint for creation of helper user:START -->
+  /admin/{id}:
+    patch:
+      tags:
+        - admin
+      summary:  Reject the user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      operationId: rejectUsers
+      responses:
+        '201':
+          description: 201 CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistrationResponse'
+        '400':
+          description: 400 BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: 401 UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: 500 INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+      #<-- Endpoint for creation of helper user:END -->
+
 components:
   schemas:
 
@@ -655,8 +770,6 @@ components:
           type: string
         email:
           type: string
-        password:
-          type: string
         status:
           type: string
         role:
@@ -688,9 +801,9 @@ components:
           type: string
         gender:
           type: string
-        email:
-          type: string
         password:
+          type: string
+        email:
           type: string
         helperdetails:
           type: object
@@ -787,7 +900,55 @@ components:
         message:
           type: string
 
+    LogOutResponse:
+      type: object
+      properties:
+        message:
+          type: string
 
+    UserRegistrationRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Naveen
+        lastName:
+          type: string
+          example: N
+        DOB:
+          type: string
+          example: 19/10/2001
+        gender:
+          type: string
+          example: male
+        email:
+          type: string
+          example: naveen@gmail.com
+        password:
+          type: string
+          example: password123
+        role:
+          type: string
+          enum: [RESIDENT,HELPER]
+          example: "RESIDENT"
+        helperdetails:
+          type: object
+          items :
+            $ref: '#/components/schemas/HelperDetails'
+
+    UserRegistrationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
     ## START - Schemas Examples for Reference ##
 
     ## Long Ref ##
