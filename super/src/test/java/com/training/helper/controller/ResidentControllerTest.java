@@ -81,4 +81,35 @@ class ResidentControllerTest {
         when(residentService.getAllTimeslots()).thenReturn(List.of(response));
         assertEquals(residentService.getAllTimeslots(), List.of(response));
     }
+
+    /**
+     * Test for retrieving all resident booking
+     */
+    @Test
+    void getAllResidentBooking() {
+        BookingResponse bookingResponse=new BookingResponse();
+        bookingResponse.setHelperId(2);
+        bookingResponse.setDate("2018-12-21");
+        bookingResponse.setUserId(1);
+
+        TimeSlot timeSlot = new TimeSlot();
+        timeSlot.setStarttime("12:00");
+        timeSlot.setEndtime("13:00");
+        timeSlot.setId(1);
+        bookingResponse.setTimeslot(List.of(timeSlot));
+        when(residentService.getAllResidentBooking(2)).thenReturn(List.of(bookingResponse));
+        assertEquals(residentService.getAllResidentBooking(2),List.of(bookingResponse));
+    }
+    /**
+     * Test for retrieving all timeslots with pagination
+     */
+    @Test
+    void getAllTimeslotsWithPagination() {
+        TimeSlot response = new TimeSlot();
+        response.setId(1);
+        response.setStarttime("14.00");
+        response.setEndtime("15.00");
+        when(residentService.getAllTimeslotsWith(0,1)).thenReturn(List.of(response));
+        assertEquals(residentService.getAllTimeslotsWith(0,1), List.of(response));
+    }
 }

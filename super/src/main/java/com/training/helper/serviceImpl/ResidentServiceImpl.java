@@ -16,13 +16,14 @@ import org.openapitools.model.BookingResquest;
 import org.openapitools.model.HelperDetails;
 import org.openapitools.model.TimeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.zip.DataFormatException;
 
 /**
  * Service class that handles Resident-related endpoints
@@ -52,7 +53,7 @@ public class ResidentServiceImpl implements ResidentService {
     public List<TimeSlot> getAllTimeslots() {
         List<TimeSlot> timeSlots = null;
         try {
-            var availableTimeSlots = slotRepository.findAll();
+            List<Slots> availableTimeSlots = slotRepository.findAll();
             timeSlots = availableTimeSlots.stream()
                     .map(slots -> {
                         TimeSlot timeSlot = new TimeSlot();
@@ -91,7 +92,7 @@ public class ResidentServiceImpl implements ResidentService {
             List<com.training.helper.entities.HelperDetails> availableHelperDetails = helperDetailsRepository.findByUser_idNotIn(bookedHelpersId);
 
             if (skills != null) {
-                availableHelperDetails.removeIf(h -> !skills.equals(h.getSkill()));
+                availableHelperDetails.removeIf(h -> !skills.toLowerCase().equals(h.getSkill()));
             }
             availableHelper = availableHelperDetails.stream()
                     .filter(h -> h.getUser().getStatus().equals(CommonConstants.STATUS_APPROVED))
@@ -127,7 +128,6 @@ public class ResidentServiceImpl implements ResidentService {
             if (todayDate.isAfter(LocalDate.parse(bookingResquest.getDate()))) {
                 throw new HelperAppException("Booking can done only after " + todayDate.minusDays(1));
             }
-
             List<Appointments> bookedHelpers = appointmentRepository.findHelperIdByLocalDateAndSlots_id(LocalDate.parse(bookingResquest.getDate()), bookingResquest.getTimeSlotId());
 
             List<Integer> bookedHelpersId = bookedHelpers.stream()
@@ -160,10 +160,16 @@ public class ResidentServiceImpl implements ResidentService {
         return bookingResponse;
     }
 
+    /**
+     * The method is retrieves all the resident booking
+     *
+     * @param residentId
+     * @return
+     */
     @Override
     public List<BookingResponse> getAllResidentBooking(Integer residentId) {
         List<BookingResponse> residentBookingResponse = null;
-        try{
+        try {
             User resident = userRepository.findById(residentId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
             if (resident.getStatus().equals(CommonConstants.STATUS_REQUESTED) || resident.getStatus().equals(CommonConstants.STATUS_REJECTED)) {
                 throw new HelperAppException(ErrorConstants.INACTIVE_HELPER);
@@ -188,12 +194,40 @@ public class ResidentServiceImpl implements ResidentService {
                         return response;
                     })
                     .collect(Collectors.toList());
-        }
-        catch (HelperAppException e){
+        } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }
         return residentBookingResponse;
     }
 
-
+    /**
+     * This method gives the available timeslots with pagination
+     *
+     * @param offset
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<TimeSlot> getAllTimeslotsWith(Integer offset, Integer pageSize) {
+        List<TimeSlot> timeSlots = null;
+        try {
+            Pageable pageable = PageRequest.of(offset, pageSize);
+            List<Slots> availableTimeSlots = slotRepository.findAll(pageable).toList();
+            if (availableTimeSlots.isEmpty()) {
+                throw new HelperAppException(CommonConstants.TIMESLOT_NOT_FOUND);
+            }
+            timeSlots = availableTimeSlots.stream()
+                    .map(slots -> {
+                        TimeSlot timeSlot = new TimeSlot();
+                        timeSlot.setStarttime(slots.getStartTime().toString());
+                        timeSlot.setEndtime(slots.getEndTime().toString());
+                        timeSlot.setId(slots.getId());
+                        return timeSlot;
+                    })
+                    .collect(Collectors.toList());
+        } catch (HelperAppException e) {
+            throw new HelperAppException(e.getMessage());
+        }
+        return timeSlots;
+    }
 }

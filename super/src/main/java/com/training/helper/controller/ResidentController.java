@@ -58,9 +58,24 @@ public class ResidentController implements ResidentApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslots());
     }
 
+    /**
+     * This endpoint is used to retrieves all timeslots with pagination
+     *
+     * @param offset   (required)
+     * @param pageSize (required)
+     * @return
+     */
+    @Override
+    public ResponseEntity<List<TimeSlot>> getAllTimeslotsWithPagination(Integer offset, Integer pageSize) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslotsWith(offset, pageSize));
+    }
 
-
-
+    /**
+     * This endpoint is used to retrieves all resident booking
+     *
+     * @param residentId (required)
+     * @return
+     */
     @Override
     public ResponseEntity<List<BookingResponse>> getAllResidentBooking(Integer residentId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllResidentBooking(residentId));

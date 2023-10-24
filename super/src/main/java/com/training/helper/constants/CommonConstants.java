@@ -20,6 +20,15 @@ public class CommonConstants {
     public  static final String DOB_PATTERN="^([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}$";
     public static final String REQUIRED_DOB="DOB is required";
 
+    public static final String REQUIRED_PASSWORD="Password is required";
+    public static final String PASSWORD_PATTERN="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+    public static final String PASSWORD_PATTERN_MESSAGE="Please provide a strong password";
+
+    public static final String REQUIRED_GENDER="Gender is required";
+    public static final String GENDER_PATTERN="^(?:male|female|other)$";
+    public static final String GENDER_PATTERN_MESSAGE="male // female // other";
+
+    public static final String TIMESLOT_NOT_FOUND="TimeSlot is empty";
 
 
 

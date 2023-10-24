@@ -1,5 +1,6 @@
 package com.training.helper.serviceImpl;
 
+import com.training.helper.constants.CommonConstants;
 import com.training.helper.entities.*;
 import com.training.helper.entities.HelperDetails;
 import com.training.helper.repository.AppointmentRepository;
@@ -192,5 +193,31 @@ class AdminServiceImplTest {
         when(rolesRepository.findById(1)).thenReturn(Optional.of(role));
         assertEquals(adminService.updateResident(residentUserCreationRequest), response);
 
+    }
+
+    @Test
+    void rejectUsers() {
+        UserRegistrationResponse deleteResponse = new UserRegistrationResponse();
+        deleteResponse.setId(1);
+        deleteResponse.setRole("HELPER");
+        deleteResponse.setFirstName("Naveen");
+        deleteResponse.setLastName("N");
+        deleteResponse.setStatus(CommonConstants.STATUS_REJECTED);
+
+        User newUser = new User(1, "Naveen", "N", "19.10.2001", "male", "naveen@gmail.com", "pass", "requested");
+        Roles newRoles = new Roles();
+        newRoles.setName("HELPER");
+        newRoles.setDescription("helper");
+        newRoles.setId(2);
+        newUser.setRoles(newRoles);
+        HelperDetails helperDetails = new HelperDetails();
+        helperDetails.setUser(newUser);
+        helperDetails.setSkill("cook");
+        helperDetails.setStatus("active");
+        helperDetails.setPhoneNumber(90868769L);
+        helperDetails.setId(2);
+        when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
+
+        assertEquals(adminService.rejectUsers(1), deleteResponse);
     }
 }

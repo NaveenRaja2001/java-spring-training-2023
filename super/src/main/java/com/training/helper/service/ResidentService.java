@@ -15,4 +15,6 @@ public interface ResidentService {
     BookingResponse bookHelper(BookingResquest bookingResquest);
 
     List<BookingResponse> getAllResidentBooking(Integer residentId);
+
+    List<TimeSlot> getAllTimeslotsWith(Integer offset, Integer pageSize);
 }

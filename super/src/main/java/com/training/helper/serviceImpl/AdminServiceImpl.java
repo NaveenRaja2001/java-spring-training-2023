@@ -259,7 +259,7 @@ public class AdminServiceImpl implements AdminService {
             rejectResponse.setFirstName(requestedUser.getFirstName());
             rejectResponse.setLastName(requestedUser.getLastName());
             rejectResponse.setStatus(requestedUser.getStatus());
-            userRepository.save(requestedUser);
+//            userRepository.save(requestedUser);
         } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }

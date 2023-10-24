@@ -49,6 +49,11 @@ public class AdminController implements AdminApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.getAllRequestedUser());
     }
 
+    /**
+     * This endpoint is used to rejectUsers
+     *
+     * @return UserRegistrationResponse
+     */
     @Override
     public ResponseEntity<UserRegistrationResponse> rejectUsers(Integer id) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.rejectUsers(id));
@@ -86,6 +91,4 @@ public class AdminController implements AdminApi {
     public ResponseEntity<UserCreationResponse> deleteUsers(Integer userId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.deleteUsers(userId));
     }
-
-
 }

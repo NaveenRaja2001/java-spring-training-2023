@@ -16,6 +16,9 @@ import org.openapitools.model.BookingResponse;
 import org.openapitools.model.BookingResquest;
 import org.openapitools.model.HelperDetails;
 import org.openapitools.model.TimeSlot;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -121,5 +124,37 @@ class ResidentServiceImplTest {
         timeSlot.setEndtime("15:00");
         bookingResponse.setTimeslot(List.of(timeSlot));
         assertEquals(residentService.bookHelper(bookingResquest),bookingResponse);
+    }
+
+    @Test
+    void getAllResidentBooking() {
+        BookingResponse bookingResponse=new BookingResponse();
+        bookingResponse.setHelperId(2);
+        bookingResponse.setDate("2018-12-21");
+        bookingResponse.setUserId(1);
+
+        TimeSlot timeSlot = new TimeSlot();
+        timeSlot.setStarttime("12:00");
+        timeSlot.setEndtime("13:00");
+        timeSlot.setId(1);
+        bookingResponse.setTimeslot(List.of(timeSlot));
+        User newUser=new User("Naveen","N","19.10.2001","male","naveen@gmail.com","pass","active");
+        newUser.setId(1);
+        when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
+        Appointments appointments=new Appointments(1,newUser,new Slots(1, LocalTime.parse("12:00"),LocalTime.parse("13:00")),LocalDate.parse("2018-12-21"),2);
+        when(appointmentRepository.findAllByResident_id(1)).thenReturn(List.of(appointments));
+        assertEquals(residentService.getAllResidentBooking(1),List.of(bookingResponse));
+    }
+
+    @Test
+    void getAllTimeslotsWith() {
+        TimeSlot response = new TimeSlot();
+        response.setId(1);
+        response.setStarttime("14:00");
+        response.setEndtime("15:00");
+        Slots timeslots = new Slots(1, LocalTime.parse("14:00"), LocalTime.parse("15:00"));
+        Page page= new PageImpl <Slots>(List.of(timeslots));
+        when(slotRepository.findAll(PageRequest.of(0,1))).thenReturn(page);
+        assertEquals(residentService.getAllTimeslotsWith(0,1), List.of(response));
     }
 }

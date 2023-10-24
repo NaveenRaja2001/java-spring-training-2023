@@ -171,4 +171,22 @@ class AdminControllerTest {
     }
 
 
+    /**
+     *  Test method for rejecting resident
+     */
+    @Test
+    void rejectUsers() {
+        UserRegistrationResponse deleteResponse = new UserRegistrationResponse();
+        deleteResponse.setId(1);
+
+        deleteResponse.setRole("HELPER");
+        deleteResponse.setFirstName("Naveen");
+        deleteResponse.setLastName("N");
+        deleteResponse.setStatus("requested");
+
+        when(adminService.rejectUsers(1)).thenReturn(deleteResponse);
+        assertEquals(adminService.rejectUsers(1),deleteResponse);
+    }
+
+
 }

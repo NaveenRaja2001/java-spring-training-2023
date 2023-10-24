@@ -19,7 +19,7 @@ public class RejectedUser {
     @Autowired
     private UserRepository userRepository;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void fixedRateSch() {
         List<User> rejectedUser = userRepository.findAllByStatus(CommonConstants.STATUS_REJECTED);
         userRepository.deleteAll(rejectedUser);
