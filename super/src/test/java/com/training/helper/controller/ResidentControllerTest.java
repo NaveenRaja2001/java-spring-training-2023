@@ -10,9 +10,11 @@ import org.openapitools.model.BookingResponse;
 import org.openapitools.model.BookingResquest;
 import org.openapitools.model.HelperDetails;
 import org.openapitools.model.TimeSlot;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +54,10 @@ class ResidentControllerTest {
 
         when(residentService.bookHelper(bookingResquest)).thenReturn(bookingResponse);
         assertEquals(residentService.bookHelper(bookingResquest), bookingResponse);
+
+        ResponseEntity<BookingResponse> responseEntity = residentController.bookHelper(bookingResquest);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(bookingResponse);
     }
 
     /**
@@ -67,6 +73,10 @@ class ResidentControllerTest {
 
         when(residentService.getAllAvailableHelpers("2018-12-22", 1,null)).thenReturn(List.of(helperDetails));
         assertEquals(residentService.getAllAvailableHelpers("2018-12-22", 1,null), List.of(helperDetails));
+
+        ResponseEntity<List<HelperDetails>> responseEntity = residentController.getAllAvailableHelpers("2018-12-22", 1,null);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(helperDetails));
     }
 
     /**
@@ -80,6 +90,10 @@ class ResidentControllerTest {
         response.setEndtime("15.00");
         when(residentService.getAllTimeslots()).thenReturn(List.of(response));
         assertEquals(residentService.getAllTimeslots(), List.of(response));
+
+        ResponseEntity<List<TimeSlot>> responseEntity = residentController.getAllTimeslots();
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(response));
     }
 
     /**
@@ -99,6 +113,10 @@ class ResidentControllerTest {
         bookingResponse.setTimeslot(List.of(timeSlot));
         when(residentService.getAllResidentBooking(2)).thenReturn(List.of(bookingResponse));
         assertEquals(residentService.getAllResidentBooking(2),List.of(bookingResponse));
+
+        ResponseEntity<List<BookingResponse>> responseEntity = residentController.getAllResidentBooking(2);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(bookingResponse));
     }
     /**
      * Test for retrieving all timeslots with pagination
@@ -111,5 +129,9 @@ class ResidentControllerTest {
         response.setEndtime("15.00");
         when(residentService.getAllTimeslotsWith(0,1)).thenReturn(List.of(response));
         assertEquals(residentService.getAllTimeslotsWith(0,1), List.of(response));
+
+        ResponseEntity<List<TimeSlot>> responseEntity = residentController.getAllTimeslotsWithPagination(0,1);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(response));
     }
 }

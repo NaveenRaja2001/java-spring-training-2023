@@ -49,7 +49,7 @@ public class User implements UserDetails {
     @Pattern(regexp = CommonConstants.DOB_PATTERN, message = CommonConstants.DOB_PATTERN_MESSAGE)
     private String DOB;
 
-    @Pattern(regexp = CommonConstants.GENDER_PATTERN, message =CommonConstants.GENDER_PATTERN_MESSAGE)
+    @Pattern(regexp = CommonConstants.GENDER_PATTERN, message = CommonConstants.GENDER_PATTERN_MESSAGE)
     private String gender;
 
     @NotNull(message = CommonConstants.REQUIRED_EMAIL)
@@ -57,7 +57,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull(message = CommonConstants.REQUIRED_PASSWORD)
-    @Pattern(regexp = CommonConstants.PASSWORD_PATTERN,message = CommonConstants.PASSWORD_PATTERN_MESSAGE)
+    @Pattern(regexp = CommonConstants.PASSWORD_PATTERN, message = CommonConstants.PASSWORD_PATTERN_MESSAGE)
     private String password;
 
     private String status;

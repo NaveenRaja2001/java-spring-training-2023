@@ -118,6 +118,9 @@ public class AdminServiceImpl implements AdminService {
             Boolean isResident = false;
             List<Appointments> appointments = new ArrayList<>();
             User requestedUser = userRepository.findById(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+            if(requestedUser.getStatus().equals(com.training.helper.constants.Roles.ADMIN.getValue())){
+                throw new HelperAppException(ErrorConstants.ADMIN_CANT_BE_DELETED);
+            }
             if (requestedUser.getRoles().getName().equals(com.training.helper.constants.Roles.HELPER.getValue())) {
                 HelperDetails helperDetails = helperDetailsRepository.findByUser_id(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
                 helperDetailsRepository.delete(helperDetails);
@@ -189,7 +192,7 @@ public class AdminServiceImpl implements AdminService {
             helperUpdateResponse.setFirstName(requestedUser.getFirstName());
             helperUpdateResponse.setLastName(requestedUser.getLastName());
             helperUpdateResponse.setPassword(helperUserCreationRequest.getPassword());
-            org.openapitools.model.HelperDetails updatedHelperDetails=new org.openapitools.model.HelperDetails();
+            org.openapitools.model.HelperDetails updatedHelperDetails = new org.openapitools.model.HelperDetails();
             updatedHelperDetails.setStatus(helperDetails.getStatus());
             updatedHelperDetails.setId(helperDetails.getId());
             updatedHelperDetails.setSkill(helperDetails.getSkill());
@@ -259,7 +262,6 @@ public class AdminServiceImpl implements AdminService {
             rejectResponse.setFirstName(requestedUser.getFirstName());
             rejectResponse.setLastName(requestedUser.getLastName());
             rejectResponse.setStatus(requestedUser.getStatus());
-//            userRepository.save(requestedUser);
         } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         }

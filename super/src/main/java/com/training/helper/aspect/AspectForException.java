@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-
+/**
+ * This class handles AOP
+ */
 @Aspect
 @Component
 public class AspectForException {
@@ -32,7 +34,7 @@ public class AspectForException {
             result = proceedingJoinPoint.proceed();
             logger.info("Method finished: " + method);
         } catch (Exception exception) {
-            logger.error("Exception occurred in method: " + method + ", Exception message: " + exception.getMessage());
+            logger.error("Exception occurred in method: " + method + ",Message: " + exception.getMessage());
             throw exception;
         }
 

@@ -8,9 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openapitools.model.BookingResponse;
 import org.openapitools.model.TimeSlot;
+import org.openapitools.model.UserRegistrationResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -45,5 +48,8 @@ HelperController helperController;
         when(helperService.getAllHelpersBooking(2)).thenReturn(List.of(bookingResponse));
         assertEquals(helperService.getAllHelpersBooking(2),List.of(bookingResponse));
 
+        ResponseEntity<List<BookingResponse>> responseEntity = helperController.getAllHelpersBooking(2);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(bookingResponse));
     }
 }

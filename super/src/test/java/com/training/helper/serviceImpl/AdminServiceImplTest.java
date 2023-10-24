@@ -220,4 +220,40 @@ class AdminServiceImplTest {
 
         assertEquals(adminService.rejectUsers(1), deleteResponse);
     }
+
+    @Test
+    void getAllRequestedUser() {
+        UserCreationResponse userOne = new UserCreationResponse();
+        userOne.setId(1);
+        userOne.setDOB("12.10.2001");
+        userOne.setEmail("naveen@gmail.com");
+        userOne.setGender("male");
+
+        RoleResponse roleResponse = new RoleResponse();
+        roleResponse.setName("HELPER");
+        roleResponse.setDescription("helper");
+        roleResponse.setId(2);
+
+        userOne.setRole(List.of(roleResponse));
+        userOne.setFirstName("Naveen");
+        userOne.setLastName("N");
+        userOne.setStatus("requested");
+
+        User newUser = new User(1, "Naveen", "N", "12.10.2001", "male", "naveen@gmail.com", "pass", "requested");
+        Roles newRoles = new Roles();
+        newRoles.setName("HELPER");
+        newRoles.setDescription("helper");
+        newRoles.setId(2);
+        newUser.setRoles(newRoles);
+        HelperDetails helperDetails = new HelperDetails();
+        helperDetails.setUser(newUser);
+        helperDetails.setSkill("cook");
+        helperDetails.setStatus("active");
+        helperDetails.setPhoneNumber(90868769L);
+        helperDetails.setId(2);
+
+        when(userRepository.findAllByStatus(CommonConstants.STATUS_REQUESTED)).thenReturn(List.of(newUser));
+        List<UserCreationResponse> response = adminService.getAllRequestedUser();
+        assertEquals(response, List.of(userOne));
+    }
 }

@@ -1,6 +1,6 @@
 package com.training.helper.exception;
 
-public class HelperAppException extends RuntimeException{
+public class HelperAppException extends RuntimeException {
     public HelperAppException(String message) {
         super(message);
     }

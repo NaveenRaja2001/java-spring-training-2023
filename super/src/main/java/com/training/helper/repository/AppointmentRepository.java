@@ -10,14 +10,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- *  Interface for Appointment entity
+ * Interface for Appointment entity
  *
  * @Author Naveen Raja
  */
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointments,Integer> {
+public interface AppointmentRepository extends JpaRepository<Appointments, Integer> {
 
-    @Query(value="SELECT a.helper_id FROM appointments a join slots s ON a.slots_id =s.id WHERE a.local_date = :date  and s.id = :timeslotId", nativeQuery=true)
+    @Query(value = "SELECT a.helper_id FROM appointments a join slots s ON a.slots_id =s.id WHERE a.local_date = :date  and s.id = :timeslotId", nativeQuery = true)
     List<Integer> findAllAvailableHelper(LocalDate date, Integer timeslotId);
 
     List<Appointments> findHelperIdByLocalDateAndSlots_id(LocalDate parse, Integer timeslotId);

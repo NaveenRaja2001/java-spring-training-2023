@@ -2,11 +2,15 @@ package com.training.helper.serviceImpl;
 
 import com.training.helper.config.JwtService;
 import com.training.helper.constants.CommonConstants;
+import com.training.helper.constants.ErrorConstants;
 import com.training.helper.entities.Roles;
 import com.training.helper.entities.User;
+import com.training.helper.exception.HelperAppException;
 import com.training.helper.repository.HelperDetailsRepository;
 import com.training.helper.repository.RolesRepository;
+import com.training.helper.repository.TokenExpiredRepository;
 import com.training.helper.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * Test for User Service class
@@ -42,7 +47,13 @@ class UserServiceImplTest {
     PasswordEncoder passwordEncoder;
 
     @Mock
+    HttpServletRequest httpServletRequest;
+
+    @Mock
     HelperDetailsRepository helperDetailsRepository;
+
+    @Mock
+    TokenExpiredRepository tokenExpiredRepository;
 
     @Mock
     AuthenticationManager authenticationManager;
@@ -136,5 +147,18 @@ class UserServiceImplTest {
         authorities.add(new SimpleGrantedAuthority("HELPER"));
         when(jwtService.genToken(newUser, authorities)).thenReturn("token");
         assertEquals(userService.authenticate(authenticationRequest), authenticationResponse);
+    }
+
+
+    /**
+     * Test for logOut User
+     */
+    @Test
+    void logoutUser() {
+        LogOutResponse logOutResponse = new LogOutResponse();
+        logOutResponse.setMessage("Token has expired");
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn("Bearer token");
+
+        assertEquals(userService.logoutUser(httpServletRequest),logOutResponse);
     }
 }

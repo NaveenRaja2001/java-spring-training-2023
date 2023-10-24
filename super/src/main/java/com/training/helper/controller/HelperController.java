@@ -28,7 +28,7 @@ public class HelperController implements HelperApi {
      */
     @Override
     public ResponseEntity<List<BookingResponse>> getAllHelpersBooking(Integer helperId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(helperService.getAllHelpersBooking(helperId));
+        return ResponseEntity.status(HttpStatus.OK).body(helperService.getAllHelpersBooking(helperId));
     }
 
 }

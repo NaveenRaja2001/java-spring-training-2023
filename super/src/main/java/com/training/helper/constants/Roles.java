@@ -5,14 +5,13 @@ public enum Roles {
     HELPER("HELPER"),
     RESIDENT("RESIDENT");
 
-        private String value;
+    private String value;
 
-        private Roles(String value) {
-            this.value = value;
-        }
+    private Roles(String value) {
+        this.value = value;
+    }
 
-        public String getValue() {
-            return value;
-
+    public String getValue() {
+        return value;
     }
 }

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 
 /**
  * Bean class for appointment
+ *
  * @Author Naveen Raja
  */
 @Data
@@ -42,9 +43,9 @@ public class Appointments {
     private Integer helperId;
 
     public Appointments(User resident, Slots timeSlot, LocalDate localDate, Integer helperId) {
-        this.resident=resident;
-        this.slots=timeSlot;
-        this.localDate=localDate;
-        this.helperId=helperId;
+        this.resident = resident;
+        this.slots = timeSlot;
+        this.localDate = localDate;
+        this.helperId = helperId;
     }
 }

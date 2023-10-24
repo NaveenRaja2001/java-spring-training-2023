@@ -110,6 +110,7 @@ public class UserServiceImpl implements UserService {
             }
             User newUser = new User(helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), userStatus);
             userCreationResponse = new UserRegistrationResponse();
+            //TODO
             Roles newRoles = rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND));
             HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
             userRepository.save(newUser);
@@ -157,7 +158,6 @@ public class UserServiceImpl implements UserService {
         } catch (RuntimeException e) {
             authenticationResponse.setMessage(e.getMessage());
         } catch (Exception e) {
-            //TODO
             throw new HelperAppException("Authentication failed: " + e.getMessage());
         }
         return authenticationResponse;

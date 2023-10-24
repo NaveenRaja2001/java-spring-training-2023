@@ -10,7 +10,7 @@ import java.util.List;
 public interface ResidentService {
     List<TimeSlot> getAllTimeslots();
 
-    List<HelperDetails> getAllAvailableHelpers(String date,Integer timeslotId,String skills);
+    List<HelperDetails> getAllAvailableHelpers(String date, Integer timeslotId, String skills);
 
     BookingResponse bookHelper(BookingResquest bookingResquest);
 

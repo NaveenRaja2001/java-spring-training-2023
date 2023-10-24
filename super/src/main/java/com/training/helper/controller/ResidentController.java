@@ -33,7 +33,7 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<BookingResponse> bookHelper(BookingResquest bookingResquest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.bookHelper(bookingResquest));
+        return ResponseEntity.status(HttpStatus.OK).body(residentService.bookHelper(bookingResquest));
     }
 
     /**
@@ -45,7 +45,7 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<List<HelperDetails>> getAllAvailableHelpers(String date, Integer timeslotId, String skills) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllAvailableHelpers(date, timeslotId, skills));
+        return ResponseEntity.status(HttpStatus.OK).body(residentService.getAllAvailableHelpers(date, timeslotId, skills));
     }
 
     /**
@@ -55,7 +55,7 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<List<TimeSlot>> getAllTimeslots() {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslots());
+        return ResponseEntity.status(HttpStatus.OK).body(residentService.getAllTimeslots());
     }
 
     /**
@@ -67,7 +67,7 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<List<TimeSlot>> getAllTimeslotsWithPagination(Integer offset, Integer pageSize) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllTimeslotsWith(offset, pageSize));
+        return ResponseEntity.status(HttpStatus.OK).body(residentService.getAllTimeslotsWith(offset, pageSize));
     }
 
     /**
@@ -78,6 +78,6 @@ public class ResidentController implements ResidentApi {
      */
     @Override
     public ResponseEntity<List<BookingResponse>> getAllResidentBooking(Integer residentId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(residentService.getAllResidentBooking(residentId));
+        return ResponseEntity.status(HttpStatus.OK).body(residentService.getAllResidentBooking(residentId));
     }
 }

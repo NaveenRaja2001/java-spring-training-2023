@@ -36,8 +36,8 @@ public class HelperAppExceptionHandler {
     }
 
     @ExceptionHandler(HelperAppException.class)
-    public ResponseEntity<HelperAppResponse> handleHelperException(HelperAppException exc){
-        HelperAppResponse helperAppResponse=new HelperAppResponse();
+    public ResponseEntity<HelperAppResponse> handleHelperException(HelperAppException exc) {
+        HelperAppResponse helperAppResponse = new HelperAppResponse();
         helperAppResponse.setMessage(exc.getMessage());
         helperAppResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         long yourMilliSeconds = System.currentTimeMillis();
@@ -45,19 +45,19 @@ public class HelperAppExceptionHandler {
         Date resultdate = new Date(yourMilliSeconds);
         helperAppResponse.setTimeStamp(sdf.format(resultdate));
 
-        return new ResponseEntity<>(helperAppResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(helperAppResponse, HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<HelperAppResponse> HandleException(Exception e){
-        HelperAppResponse helperAppResponse=new HelperAppResponse();
+    public ResponseEntity<HelperAppResponse> HandleException(Exception e) {
+        HelperAppResponse helperAppResponse = new HelperAppResponse();
         helperAppResponse.setMessage(e.getMessage());
         helperAppResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         long yourMilliSeconds = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
         Date resultdate = new Date(yourMilliSeconds);
         helperAppResponse.setTimeStamp(sdf.format(resultdate));
-        return new ResponseEntity<>(helperAppResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(helperAppResponse, HttpStatus.BAD_REQUEST);
     }
 }

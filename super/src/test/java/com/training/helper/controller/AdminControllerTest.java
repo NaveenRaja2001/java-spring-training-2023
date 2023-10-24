@@ -9,11 +9,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openapitools.model.*;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Test for admin controller endpoints
@@ -46,7 +49,11 @@ class AdminControllerTest {
         response.setStatus("approved");
         when(adminService.approveUser(1)).thenReturn(response);
         UserRegistrationResponse expected = adminService.approveUser(1);
+
+        ResponseEntity<UserRegistrationResponse> responseEntity = adminController.approveUser(1);
         assertEquals(expected, response);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(response);
     }
 
     /**
@@ -85,6 +92,10 @@ class AdminControllerTest {
         when(adminService.getAllRequestedUser()).thenReturn(List.of(userOne, userTwo));
         List<UserCreationResponse> response = adminService.getAllRequestedUser();
         assertEquals(response, List.of(userOne, userTwo));
+
+        ResponseEntity<List<UserCreationResponse>> responseEntity = adminController.getAllRequestedUser();
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(List.of(userOne, userTwo));
     }
 
 
@@ -113,6 +124,10 @@ class AdminControllerTest {
 
         when(adminService.deleteUsers(1)).thenReturn(deleteResponse);
         assertEquals(adminService.deleteUsers(1),deleteResponse);
+
+        ResponseEntity<UserCreationResponse> responseEntity = adminController.deleteUsers(1);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(204);
+        assertThat(responseEntity.getBody()).isEqualTo(deleteResponse);
     }
 
     /**
@@ -143,6 +158,9 @@ class AdminControllerTest {
         when(adminService.updateHelper(helperUserCreationRequest)).thenReturn(response);
         assertEquals(adminService.updateHelper(helperUserCreationRequest),response);
 
+        ResponseEntity<HelperUserCreationRequest> responseEntity = adminController.updateHelper(helperUserCreationRequest);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(response);
     }
 
     /**
@@ -168,6 +186,10 @@ class AdminControllerTest {
         residentUserCreationRequest.setPassword("pass");
         when(adminService.updateResident(residentUserCreationRequest)).thenReturn(response);
         assertEquals(adminService.updateResident(residentUserCreationRequest),response);
+
+        ResponseEntity<ResidentUserCreationRequest> responseEntity = adminController.updateResident(residentUserCreationRequest);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(response);
     }
 
 
@@ -186,6 +208,10 @@ class AdminControllerTest {
 
         when(adminService.rejectUsers(1)).thenReturn(deleteResponse);
         assertEquals(adminService.rejectUsers(1),deleteResponse);
+
+        ResponseEntity<UserRegistrationResponse> responseEntity = adminController.rejectUsers(1);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(deleteResponse);
     }
 
 

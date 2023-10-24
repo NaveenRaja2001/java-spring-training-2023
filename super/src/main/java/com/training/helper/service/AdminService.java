@@ -4,7 +4,6 @@ import org.openapitools.model.HelperUserCreationRequest;
 import org.openapitools.model.ResidentUserCreationRequest;
 import org.openapitools.model.UserCreationResponse;
 import org.openapitools.model.UserRegistrationResponse;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 

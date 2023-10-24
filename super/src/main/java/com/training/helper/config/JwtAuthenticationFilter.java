@@ -35,10 +35,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private final UserDetailsService userDetailsService;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private TokenExpiredRepository tokenExpiredRepository;
 
@@ -72,11 +71,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 filterChain.doFilter(request, response);
-            }
-            catch (HelperAppException e) {
+            } catch (HelperAppException e) {
                 throw new HelperAppException(e.getMessage());
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }
         } else {

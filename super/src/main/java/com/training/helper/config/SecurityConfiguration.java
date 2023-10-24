@@ -24,7 +24,8 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     /**
-     *  Security filter chain class
+     * Security filter chain class
+     *
      * @param http
      * @return
      * @throws Exception
@@ -37,9 +38,9 @@ public class SecurityConfiguration {
                 .sessionManagement(S -> S.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
                 .authorizeHttpRequests(e -> e.requestMatchers("/resident/**").hasAnyAuthority(Roles.RESIDENT.getValue())
-                        .requestMatchers("/user/logout").hasAnyAuthority(Roles.ADMIN.getValue(),Roles.HELPER.getValue(),Roles.RESIDENT.getValue())
-                        .requestMatchers("/helpers/timeslot").hasAnyAuthority(Roles.HELPER.getValue(),Roles.RESIDENT.getValue())
-                        .requestMatchers("/helpers/timeslot/**").hasAnyAuthority(Roles.HELPER.getValue(),Roles.RESIDENT.getValue())
+                        .requestMatchers("/user/logout").hasAnyAuthority(Roles.ADMIN.getValue(), Roles.HELPER.getValue(), Roles.RESIDENT.getValue())
+                        .requestMatchers("/helpers/timeslot").hasAnyAuthority(Roles.HELPER.getValue(), Roles.RESIDENT.getValue())
+                        .requestMatchers("/helpers/timeslot/**").hasAnyAuthority(Roles.HELPER.getValue(), Roles.RESIDENT.getValue())
                         .requestMatchers("/helpers/**").hasAnyAuthority(Roles.HELPER.getValue())
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority(Roles.ADMIN.getValue())

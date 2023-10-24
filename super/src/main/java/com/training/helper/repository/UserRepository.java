@@ -20,17 +20,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
-    @Query(
-            value = "SELECT * FROM USER u WHERE u.status = 'requested'",
-            nativeQuery = true)
-    List<User> getAllRequestedUser();
-
-    Optional<User> findByStatus(String status);
-
-    @Query(
-            value = "SELECT * FROM USER u WHERE u.status = 'rejected'",
-            nativeQuery = true)
-    List<User> getAllRejectedUser();
-
     List<User> findAllByStatus(String status);
 }

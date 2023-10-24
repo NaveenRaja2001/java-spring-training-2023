@@ -36,7 +36,7 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<UserRegistrationResponse> approveUser(Integer userId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.approveUser(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.approveUser(userId));
     }
 
     /**
@@ -46,7 +46,7 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<List<UserCreationResponse>> getAllRequestedUser() {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.getAllRequestedUser());
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.getAllRequestedUser());
     }
 
     /**
@@ -56,7 +56,7 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<UserRegistrationResponse> rejectUsers(Integer id) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.rejectUsers(id));
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.rejectUsers(id));
     }
 
     /**
@@ -67,7 +67,7 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<HelperUserCreationRequest> updateHelper(HelperUserCreationRequest helperUserCreationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateHelper(helperUserCreationRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.updateHelper(helperUserCreationRequest));
     }
 
     /**
@@ -78,7 +78,7 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<ResidentUserCreationRequest> updateResident(ResidentUserCreationRequest residentUserCreationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.updateResident(residentUserCreationRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.updateResident(residentUserCreationRequest));
     }
 
     /**
@@ -89,6 +89,6 @@ public class AdminController implements AdminApi {
      */
     @Override
     public ResponseEntity<UserCreationResponse> deleteUsers(Integer userId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.deleteUsers(userId));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(adminService.deleteUsers(userId));
     }
 }
