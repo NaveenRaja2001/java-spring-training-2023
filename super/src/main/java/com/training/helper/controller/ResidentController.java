@@ -49,16 +49,6 @@ public class ResidentController implements ResidentApi {
     }
 
     /**
-     * This endpoint is used to retrieves all timeslots
-     *
-     * @return List of TimeSlot
-     */
-    @Override
-    public ResponseEntity<List<TimeSlot>> getAllTimeslots() {
-        return ResponseEntity.status(HttpStatus.OK).body(residentService.getAllTimeslots());
-    }
-
-    /**
      * This endpoint is used to retrieves all timeslots with pagination
      *
      * @param offset   (required)

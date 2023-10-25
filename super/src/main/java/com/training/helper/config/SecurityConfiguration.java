@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/helpers/timeslot/**").hasAnyAuthority(Roles.HELPER.getValue(), Roles.RESIDENT.getValue())
                         .requestMatchers("/helpers/**").hasAnyAuthority(Roles.HELPER.getValue())
                         .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/u/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority(Roles.ADMIN.getValue())
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())

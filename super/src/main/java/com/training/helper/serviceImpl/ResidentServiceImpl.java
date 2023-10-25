@@ -57,8 +57,8 @@ public class ResidentServiceImpl implements ResidentService {
             timeSlots = availableTimeSlots.stream()
                     .map(slots -> {
                         TimeSlot timeSlot = new TimeSlot();
-                        timeSlot.setStarttime(slots.getStartTime().toString());
-                        timeSlot.setEndtime(slots.getEndTime().toString());
+                        timeSlot.setStartTime(slots.getStartTime().toString());
+                        timeSlot.setEndTime(slots.getEndTime().toString());
                         timeSlot.setId(slots.getId());
                         return timeSlot;
                     })
@@ -99,7 +99,7 @@ public class ResidentServiceImpl implements ResidentService {
                     .map(h -> {
                         HelperDetails helperDetails = new HelperDetails();
                         helperDetails.setId(h.getUser().getId());
-                        helperDetails.setPhonenumber(h.getPhoneNumber());
+                        helperDetails.setPhoneNumber(h.getPhoneNumber());
                         helperDetails.setSkill(h.getSkill());
                         helperDetails.setStatus(h.getUser().getStatus());
                         return helperDetails;
@@ -146,8 +146,8 @@ public class ResidentServiceImpl implements ResidentService {
             appointmentRepository.save(appointments);
             TimeSlot bookedTimeSlot = new TimeSlot();
             bookedTimeSlot.setId(timeSlot.getId());
-            bookedTimeSlot.setStarttime(timeSlot.getStartTime().toString());
-            bookedTimeSlot.setEndtime(timeSlot.getEndTime().toString());
+            bookedTimeSlot.setStartTime(timeSlot.getStartTime().toString());
+            bookedTimeSlot.setEndTime(timeSlot.getEndTime().toString());
             bookingResponse = new BookingResponse();
             bookingResponse.setTimeslot(List.of(bookedTimeSlot));
             bookingResponse.setHelperId(appointments.getHelperId());
@@ -186,8 +186,8 @@ public class ResidentServiceImpl implements ResidentService {
                         response.setUserId(appointment.getResident().getId());
 
                         TimeSlot timeSlot = new TimeSlot();
-                        timeSlot.setStarttime(appointment.getSlots().getStartTime().toString());
-                        timeSlot.setEndtime(appointment.getSlots().getEndTime().toString());
+                        timeSlot.setStartTime(appointment.getSlots().getStartTime().toString());
+                        timeSlot.setEndTime(appointment.getSlots().getEndTime().toString());
                         timeSlot.setId(appointment.getSlots().getId());
                         response.setTimeslot(List.of(timeSlot));
 
@@ -219,8 +219,8 @@ public class ResidentServiceImpl implements ResidentService {
             timeSlots = availableTimeSlots.stream()
                     .map(slots -> {
                         TimeSlot timeSlot = new TimeSlot();
-                        timeSlot.setStarttime(slots.getStartTime().toString());
-                        timeSlot.setEndtime(slots.getEndTime().toString());
+                        timeSlot.setStartTime(slots.getStartTime().toString());
+                        timeSlot.setEndTime(slots.getEndTime().toString());
                         timeSlot.setId(slots.getId());
                         return timeSlot;
                     })

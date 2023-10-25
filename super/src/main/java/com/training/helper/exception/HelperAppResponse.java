@@ -8,7 +8,7 @@ package com.training.helper.exception;
 public class HelperAppResponse {
     private int status;
     private String message;
-    private String timeStamp;
+//    private String timeStamp;
 
     public HelperAppResponse() {
 
@@ -30,20 +30,21 @@ public class HelperAppResponse {
         this.message = message;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
-    }
+//    public String getTimeStamp() {
+//        return timeStamp;
+//    }
+//
 
     @Override
     public String toString() {
-        return "MeetingScheduleErrorResponse{" +
+        return "HelperAppResponse{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
-                ", timeStamp=" + timeStamp +
                 '}';
     }
+//    public void setTimeStamp(String timeStamp) {
+//        this.timeStamp = timeStamp;
+//    }
+
+
 }

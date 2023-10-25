@@ -56,8 +56,8 @@ class ResidentServiceImplTest {
     void getAllTimeslots() {
         TimeSlot response = new TimeSlot();
         response.setId(1);
-        response.setStarttime("14:00");
-        response.setEndtime("15:00");
+        response.setStartTime("14:00");
+        response.setEndTime("15:00");
         Slots timeslots = new Slots(1, LocalTime.parse("14:00"), LocalTime.parse("15:00"));
         when(slotRepository.findAll()).thenReturn(List.of(timeslots));
         assertEquals(residentService.getAllTimeslots(), List.of(response));
@@ -70,7 +70,7 @@ class ResidentServiceImplTest {
     @Test
     void getAllAvailableHelpers() {
         HelperDetails response = new HelperDetails();
-        response.setPhonenumber(80732423576L);
+        response.setPhoneNumber(80732423576L);
         response.setSkill("plumber");
         response.setId(1);
         response.setStatus("approved");
@@ -120,8 +120,8 @@ class ResidentServiceImplTest {
 
         TimeSlot timeSlot=new TimeSlot();
         timeSlot.setId(1);
-        timeSlot.setStarttime("14:00");
-        timeSlot.setEndtime("15:00");
+        timeSlot.setStartTime("14:00");
+        timeSlot.setEndTime("15:00");
         bookingResponse.setTimeslot(List.of(timeSlot));
         assertEquals(residentService.bookHelper(bookingResquest),bookingResponse);
     }
@@ -134,8 +134,8 @@ class ResidentServiceImplTest {
         bookingResponse.setUserId(1);
 
         TimeSlot timeSlot = new TimeSlot();
-        timeSlot.setStarttime("12:00");
-        timeSlot.setEndtime("13:00");
+        timeSlot.setStartTime("12:00");
+        timeSlot.setEndTime("13:00");
         timeSlot.setId(1);
         bookingResponse.setTimeslot(List.of(timeSlot));
         User newUser=new User("Naveen","N","19.10.2001","male","naveen@gmail.com","pass","active");
@@ -150,8 +150,8 @@ class ResidentServiceImplTest {
     void getAllTimeslotsWith() {
         TimeSlot response = new TimeSlot();
         response.setId(1);
-        response.setStarttime("14:00");
-        response.setEndtime("15:00");
+        response.setStartTime("14:00");
+        response.setEndTime("15:00");
         Slots timeslots = new Slots(1, LocalTime.parse("14:00"), LocalTime.parse("15:00"));
         Page page= new PageImpl <Slots>(List.of(timeslots));
         when(slotRepository.findAll(PageRequest.of(0,1))).thenReturn(page);

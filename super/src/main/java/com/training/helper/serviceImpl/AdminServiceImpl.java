@@ -7,6 +7,7 @@ import com.training.helper.entities.HelperDetails;
 import com.training.helper.entities.Roles;
 import com.training.helper.entities.User;
 import com.training.helper.exception.HelperAppException;
+import com.training.helper.projection.MailSender;
 import com.training.helper.repository.AppointmentRepository;
 import com.training.helper.repository.HelperDetailsRepository;
 import com.training.helper.repository.RolesRepository;
@@ -39,6 +40,9 @@ public class AdminServiceImpl implements AdminService {
     private RolesRepository rolesRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MailSender mailSender;
 
     /**
      * This method is used to approve the requested User
@@ -82,7 +86,7 @@ public class AdminServiceImpl implements AdminService {
                     .map(user -> {
                         UserCreationResponse userCreationResponse = new UserCreationResponse();
                         userCreationResponse.setId(user.getId());
-                        userCreationResponse.setDOB(user.getDOB());
+                        userCreationResponse.setDob(user.getDOB());
                         userCreationResponse.setEmail(user.getEmail());
                         userCreationResponse.setGender(user.getGender());
 
@@ -117,14 +121,20 @@ public class AdminServiceImpl implements AdminService {
         try {
             Boolean isResident = false;
             List<Appointments> appointments = new ArrayList<>();
+            List<String> notifyUser=new ArrayList<>();
             User requestedUser = userRepository.findById(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
             if(requestedUser.getStatus().equals(com.training.helper.constants.Roles.ADMIN.getValue())){
                 throw new HelperAppException(ErrorConstants.ADMIN_CANT_BE_DELETED);
             }
             if (requestedUser.getRoles().getName().equals(com.training.helper.constants.Roles.HELPER.getValue())) {
+
                 HelperDetails helperDetails = helperDetailsRepository.findByUser_id(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
                 helperDetailsRepository.delete(helperDetails);
                 appointments = appointmentRepository.findAllByHelperId(userId);
+//  for mail
+                notifyUser = appointments.stream().map(a -> a.getResident().getEmail()).collect(Collectors.toList());
+//                mailSender.sendSimpleMail(notifyUser,userId);
+
 
             } else {
                 appointments = appointmentRepository.findAllByResident_id(userId);
@@ -135,7 +145,7 @@ public class AdminServiceImpl implements AdminService {
                 userRepository.delete(requestedUser);
             }
             deleteResponse.setId(requestedUser.getId());
-            deleteResponse.setDOB(requestedUser.getDOB());
+            deleteResponse.setDob(requestedUser.getDOB());
             deleteResponse.setEmail(requestedUser.getEmail());
             deleteResponse.setGender(requestedUser.getGender());
 
@@ -175,18 +185,18 @@ public class AdminServiceImpl implements AdminService {
             requestedUser.setFirstName(helperUserCreationRequest.getFirstName());
             requestedUser.setLastName(helperUserCreationRequest.getLastName());
             requestedUser.setGender(helperUserCreationRequest.getGender());
-            requestedUser.setDOB(helperUserCreationRequest.getDOB());
+            requestedUser.setDOB(helperUserCreationRequest.getDob());
             requestedUser.setEmail(helperUserCreationRequest.getEmail());
             requestedUser.setPassword(passwordEncoder.encode(helperUserCreationRequest.getPassword()));
             requestedUser.setStatus(requestedUser.getStatus());
             requestedUser.setRoles(rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
-            HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getId(), helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
+            HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperDetails().get(0).getId(), helperUserCreationRequest.getHelperDetails().get(0).getPhoneNumber(), helperUserCreationRequest.getHelperDetails().get(0).getSkill(), helperUserCreationRequest.getHelperDetails().get(0).getStatus());
             userRepository.save(requestedUser);
             helperDetails.setUser(requestedUser);
             helperDetailsRepository.save(helperDetails);
 
             helperUpdateResponse.setId(requestedUser.getId());
-            helperUpdateResponse.setDOB(requestedUser.getDOB());
+            helperUpdateResponse.setDob(requestedUser.getDOB());
             helperUpdateResponse.setEmail(requestedUser.getEmail());
             helperUpdateResponse.setGender(requestedUser.getGender());
             helperUpdateResponse.setFirstName(requestedUser.getFirstName());
@@ -196,8 +206,8 @@ public class AdminServiceImpl implements AdminService {
             updatedHelperDetails.setStatus(helperDetails.getStatus());
             updatedHelperDetails.setId(helperDetails.getId());
             updatedHelperDetails.setSkill(helperDetails.getSkill());
-            updatedHelperDetails.setPhonenumber(helperDetails.getPhoneNumber());
-            helperUpdateResponse.setHelperdetails(List.of(updatedHelperDetails));
+            updatedHelperDetails.setPhoneNumber(helperDetails.getPhoneNumber());
+            helperUpdateResponse.setHelperDetails(List.of(updatedHelperDetails));
         } catch (HelperAppException e) {
             throw new HelperAppException(e.getMessage());
         } catch (ConstraintViolationException e) {
@@ -221,12 +231,12 @@ public class AdminServiceImpl implements AdminService {
                 throw new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR);
             }
             residentUpdateResponse = new ResidentUserCreationRequest();
-            User updatedUser = new User(residentUserCreationRequest.getId(), residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDOB(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), requestedUser.getStatus());
+            User updatedUser = new User(residentUserCreationRequest.getId(), residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDob(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), requestedUser.getStatus());
             updatedUser.setRoles(rolesRepository.findById(1).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND)));
 
             userRepository.save(updatedUser);
             residentUpdateResponse.setId(updatedUser.getId());
-            residentUpdateResponse.setDOB(updatedUser.getDOB());
+            residentUpdateResponse.setDob(updatedUser.getDOB());
             residentUpdateResponse.setEmail(updatedUser.getEmail());
             residentUpdateResponse.setGender(updatedUser.getGender());
             residentUpdateResponse.setFirstName(updatedUser.getFirstName());
@@ -254,6 +264,37 @@ public class AdminServiceImpl implements AdminService {
             }
             requestedUser.setStatus(CommonConstants.STATUS_REJECTED);
 
+            userRepository.save(requestedUser);
+            rejectResponse = new UserRegistrationResponse();
+            rejectResponse.setId(requestedUser.getId());
+
+            rejectResponse.setRole(requestedUser.getRoles().getName());
+            rejectResponse.setFirstName(requestedUser.getFirstName());
+            rejectResponse.setLastName(requestedUser.getLastName());
+            rejectResponse.setStatus(requestedUser.getStatus());
+        } catch (HelperAppException e) {
+            throw new HelperAppException(e.getMessage());
+        }
+        return rejectResponse;
+    }
+
+    @Override
+    public UserRegistrationResponse approveOrRejectUser(String operation,Integer userId) {
+        UserRegistrationResponse rejectResponse;
+        try {
+            User requestedUser = userRepository.findById(userId).orElseThrow(() -> new HelperAppException(ErrorConstants.USER_NOT_FOUND_ERROR));
+
+            if(operation.equals("reject")) {
+                if (requestedUser.getStatus().equals(CommonConstants.STATUS_APPROVED) || requestedUser.getStatus().equals(CommonConstants.STATUS_REJECTED)) {
+                    throw new HelperAppException("User is already approved or rejected");
+                }
+                requestedUser.setStatus(CommonConstants.STATUS_REJECTED);
+            }
+            if(operation.equals("approve")){
+                if (!requestedUser.getStatus().equals(CommonConstants.STATUS_REQUESTED)) {
+                    throw new HelperAppException(ErrorConstants.USER_ALREADY_ACTIVE_OR_REJECTED);
+                }
+            }
             userRepository.save(requestedUser);
             rejectResponse = new UserRegistrationResponse();
             rejectResponse.setId(requestedUser.getId());

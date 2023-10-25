@@ -28,6 +28,11 @@ public class AdminController implements AdminApi {
     @Autowired
     private UserService userService;
 
+    @Override
+    public ResponseEntity<UserRegistrationResponse> approveOrRejectUser(String operation, Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.approveOrRejectUser(operation,userId));
+    }
+
     /**
      * This endpoint is used to approve the requested User
      *
@@ -49,15 +54,15 @@ public class AdminController implements AdminApi {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getAllRequestedUser());
     }
 
-    /**
-     * This endpoint is used to rejectUsers
-     *
-     * @return UserRegistrationResponse
-     */
-    @Override
-    public ResponseEntity<UserRegistrationResponse> rejectUsers(Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.rejectUsers(id));
-    }
+//    /**
+//     * This endpoint is used to rejectUsers
+//     *
+//     * @return UserRegistrationResponse
+//     */
+//    @Override
+//    public ResponseEntity<UserRegistrationResponse> rejectUsers(Integer id) {
+//        return ResponseEntity.status(HttpStatus.OK).body(adminService.rejectUsers(id));
+//    }
 
     /**
      * This endpoint is used to update helper

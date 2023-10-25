@@ -214,53 +214,20 @@ paths:
 
       #<-- Endpoint for creation of helper user:END -->
 
-      #<-- Endpoint for creation of resident user:START -->
+
+
   /helpers/timeslot:
     get:
       tags:
         - resident
       summary: Endpoint for retrieving available timeslot
-      operationId: getAllTimeslots
-      responses:
-        '201':
-          description: 201 CREATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TimeSlotResponse'
-        '400':
-          description: 400 BAD REQUEST
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestError'
-        '401':
-          description: 401 UNAUTHORIZED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedError'
-        '500':
-          description: 500 INTERNAL SERVER ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServerError'
-
-        #<-- Endpoint for creation of resident user:END -->
-
-  /helpers/timeslot/{offset}/{pageSize}:
-    get:
-      tags:
-        - resident
-      summary: Endpoint for retrieving available timeslot
       parameters:
-        - in: path
+        - in: query
           name: offset
           schema:
             type: integer
           required: true
-        - in: path
+        - in: query
           name: pageSize
           schema:
             type: integer
@@ -686,46 +653,46 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
 
 
-          #<-- Endpoint for creation of helper user:START -->
-  /admin/{id}:
-    patch:
-      tags:
-        - admin
-      summary:  Reject the user
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-      operationId: rejectUsers
-      responses:
-        '201':
-          description: 201 CREATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserRegistrationResponse'
-        '400':
-          description: 400 BAD REQUEST
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestError'
-        '401':
-          description: 401 UNAUTHORIZED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedError'
-        '500':
-          description: 500 INTERNAL SERVER ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServerError'
+    #         #<-- Endpoint for creation of helper user:START -->
+    # /admin/{id}:
+    #   patch:
+    #     tags:
+    #       - admin
+    #     summary:  Reject the user
+    #     parameters:
+    #       - in: path
+    #         name: id
+    #         schema:
+    #           type: integer
+    #         required: true
+    #     operationId: rejectUsers
+    #     responses:
+    #       '201':
+    #         description: 201 CREATED
+    #         content:
+    #           application/json:
+    #             schema:
+    #               $ref: '#/components/schemas/UserRegistrationResponse'
+    #       '400':
+    #         description: 400 BAD REQUEST
+    #         content:
+    #           application/json:
+    #             schema:
+    #               $ref: '#/components/schemas/BadRequestError'
+    #       '401':
+    #         description: 401 UNAUTHORIZED
+    #         content:
+    #           application/json:
+    #             schema:
+    #               $ref: '#/components/schemas/UnauthorizedError'
+    #       '500':
+    #         description: 500 INTERNAL SERVER ERROR
+    #         content:
+    #           application/json:
+    #             schema:
+    #               $ref: '#/components/schemas/InternalServerError'
 
-      #<-- Endpoint for creation of helper user:END -->
+    #     #<-- Endpoint for creation of helper user:END -->
     #<-- Endpoint for creation of resident user:START -->
   /resident/booking:
     get:
@@ -766,6 +733,51 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
 
         #<-- Endpoint for creation of resident user:END -->
+    #<-- Endpoint for creation of resident user:START -->
+  /admin/{operation}:
+    patch:
+      tags:
+        - admin
+      summary: Endpoint for approving the user
+      parameters:
+        - in: path
+          name: operation
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          required: true
+      operationId: approveOrRejectUser
+      responses:
+        '201':
+          description: 201 CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistrationResponse'
+        '400':
+          description: 400 BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: 401 UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '500':
+          description: 500 INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+          #<-- Endpoint for creation of resident user:END -->
 components:
   schemas:
 
@@ -830,7 +842,7 @@ components:
           type: string
         lastName:
           type: string
-        DOB:
+        dob:
           type: string
         gender:
           type: string
@@ -848,7 +860,7 @@ components:
           type: string
         lastName:
           type: string
-        DOB:
+        dob:
           type: string
         gender:
           type: string
@@ -881,7 +893,7 @@ components:
           type: string
         lastName:
           type: string
-        DOB:
+        dob:
           type: string
         gender:
           type: string
@@ -889,7 +901,7 @@ components:
           type: string
         email:
           type: string
-        helperdetails:
+        helperDetails:
           type: object
           items :
             $ref: '#/components/schemas/HelperDetails'
@@ -899,7 +911,7 @@ components:
       properties:
         id:
           type: integer
-        phonenumber:
+        phoneNumber:
           type: integer
           format: int64
         skill:
@@ -922,9 +934,9 @@ components:
       properties:
         id:
           type: integer
-        starttime:
+        startTime:
           type: string
-        endtime:
+        endTime:
           type: string
 
     AvailablityHelperResponse:
@@ -937,7 +949,7 @@ components:
       properties:
         userId:
           type: integer
-        HelperId:
+        helperId:
           type: integer
         date:
           type: string
@@ -955,7 +967,7 @@ components:
       properties:
         userId:
           type: integer
-        HelperId:
+        helperId:
           type: integer
         date:
           type: string
@@ -976,7 +988,7 @@ components:
     AuthenticationResponse:
       type: object
       properties:
-        access_token:
+        accessToken:
           type: string
         email:
           type: string
@@ -999,7 +1011,7 @@ components:
         lastName:
           type: string
           example: N
-        DOB:
+        dob:
           type: string
           example: 19/10/2001
         gender:
@@ -1015,7 +1027,7 @@ components:
           type: string
           enum: [RESIDENT,HELPER]
           example: "RESIDENT"
-        helperdetails:
+        helperDetails:
           type: object
           items :
             $ref: '#/components/schemas/HelperDetails'

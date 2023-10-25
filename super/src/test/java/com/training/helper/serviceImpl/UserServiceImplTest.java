@@ -80,7 +80,7 @@ class UserServiceImplTest {
 
 
         UserRegistrationRequest residentUserCreationRequest = new UserRegistrationRequest();
-        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setDob("12.01.2001");
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
 
@@ -113,15 +113,15 @@ class UserServiceImplTest {
         UserRegistrationRequest helperUserCreationRequest = new UserRegistrationRequest();
         helperUserCreationRequest.setFirstName("Naveen");
         helperUserCreationRequest.setLastName("N");
-        helperUserCreationRequest.setDOB("12.01.2001");
+        helperUserCreationRequest.setDob("12.01.2001");
         helperUserCreationRequest.setGender("male");
         helperUserCreationRequest.setEmail("naveen@gmail.com");
 
         HelperDetails helperDetails = new HelperDetails();
         helperDetails.setSkill("plumber");
-        helperDetails.setPhonenumber(808764563L);
+        helperDetails.setPhoneNumber(808764563L);
         helperDetails.setStatus("active");
-        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
+        helperUserCreationRequest.setHelperDetails(List.of(helperDetails));
         Roles role = new Roles(2, "HELPER", "helper");
         when(userRepository.existsByEmail(helperUserCreationRequest.getEmail())).thenReturn(false);
         when(rolesRepository.findById(2)).thenReturn(Optional.of(role));

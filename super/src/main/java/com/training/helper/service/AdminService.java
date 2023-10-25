@@ -19,4 +19,6 @@ public interface AdminService {
     ResidentUserCreationRequest updateResident(ResidentUserCreationRequest residentUserCreationRequest);
 
     UserRegistrationResponse rejectUsers(Integer id);
+
+    UserRegistrationResponse approveOrRejectUser(String operation,Integer userId);
 }

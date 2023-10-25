@@ -63,7 +63,7 @@ class AdminControllerTest {
     void getAllRequestedUser() {
         UserCreationResponse userOne = new UserCreationResponse();
         userOne.setId(1);
-        userOne.setDOB("12.01.2001");
+        userOne.setDob("12.01.2001");
         userOne.setEmail("naveen@gmail.com");
         userOne.setGender("male");
 
@@ -79,7 +79,7 @@ class AdminControllerTest {
 
         UserCreationResponse userTwo = new UserCreationResponse();
         userTwo.setId(2);
-        userTwo.setDOB("19.01.2011");
+        userTwo.setDob("19.01.2011");
         userTwo.setEmail("sakthi@gmail.com");
         userTwo.setGender("male");
 
@@ -108,7 +108,7 @@ class AdminControllerTest {
     void deleteUsers() {
         UserCreationResponse deleteResponse = new UserCreationResponse();
         deleteResponse.setId(1);
-        deleteResponse.setDOB("19.10.2001");
+        deleteResponse.setDob("19.10.2001");
         deleteResponse.setEmail("naveen@gmail.com");
         deleteResponse.setGender("male");
 
@@ -136,7 +136,7 @@ class AdminControllerTest {
     @Test
     void updateHelper() {
         HelperUserCreationRequest response = new HelperUserCreationRequest();
-        response.setDOB("12.01.2001");
+        response.setDob("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
 
@@ -146,15 +146,15 @@ class AdminControllerTest {
         HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
         helperUserCreationRequest.setFirstName("Naveen");
         helperUserCreationRequest.setLastName("N");
-        helperUserCreationRequest.setDOB("12.01.2001");
+        helperUserCreationRequest.setDob("12.01.2001");
         helperUserCreationRequest.setGender("male");
         helperUserCreationRequest.setEmail("naveen@gmail.com");
 
         HelperDetails helperDetails = new HelperDetails();
         helperDetails.setSkill("plumber");
-        helperDetails.setPhonenumber(808764563L);
+        helperDetails.setPhoneNumber(808764563L);
         helperDetails.setStatus("active");
-        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
+        helperUserCreationRequest.setHelperDetails(List.of(helperDetails));
         when(adminService.updateHelper(helperUserCreationRequest)).thenReturn(response);
         assertEquals(adminService.updateHelper(helperUserCreationRequest),response);
 
@@ -169,7 +169,7 @@ class AdminControllerTest {
     @Test
     void updateResident() {
         ResidentUserCreationRequest response = new ResidentUserCreationRequest();
-        response.setDOB("12.01.2001");
+        response.setDob("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
 
@@ -177,7 +177,7 @@ class AdminControllerTest {
         response.setLastName("N");
 
         ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
-        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setDob("12.01.2001");
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
 
@@ -192,27 +192,46 @@ class AdminControllerTest {
         assertThat(responseEntity.getBody()).isEqualTo(response);
     }
 
+    @Test
+    void approveOrRejectUser() {
+        UserRegistrationResponse response = new UserRegistrationResponse();
+        response.setId(1);
+
+        response.setRole(Roles.HELPER.getValue());
+        response.setFirstName("Naveen");
+        response.setLastName("N");
+//        response.setPassword("pass");
+        response.setStatus("approved");
+        when(adminService.approveOrRejectUser("approve",1)).thenReturn(response);
+        UserRegistrationResponse expected = adminService.approveOrRejectUser("approve",1);
+
+        ResponseEntity<UserRegistrationResponse> responseEntity = adminController.approveOrRejectUser("approve",1);
+        assertEquals(expected, response);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(responseEntity.getBody()).isEqualTo(response);
+    }
+
 
     /**
      *  Test method for rejecting resident
      */
-    @Test
-    void rejectUsers() {
-        UserRegistrationResponse deleteResponse = new UserRegistrationResponse();
-        deleteResponse.setId(1);
-
-        deleteResponse.setRole("HELPER");
-        deleteResponse.setFirstName("Naveen");
-        deleteResponse.setLastName("N");
-        deleteResponse.setStatus("requested");
-
-        when(adminService.rejectUsers(1)).thenReturn(deleteResponse);
-        assertEquals(adminService.rejectUsers(1),deleteResponse);
-
-        ResponseEntity<UserRegistrationResponse> responseEntity = adminController.rejectUsers(1);
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
-        assertThat(responseEntity.getBody()).isEqualTo(deleteResponse);
-    }
+//    @Test
+//    void rejectUsers() {
+//        UserRegistrationResponse deleteResponse = new UserRegistrationResponse();
+//        deleteResponse.setId(1);
+//
+//        deleteResponse.setRole("HELPER");
+//        deleteResponse.setFirstName("Naveen");
+//        deleteResponse.setLastName("N");
+//        deleteResponse.setStatus("requested");
+//
+//        when(adminService.rejectUsers(1)).thenReturn(deleteResponse);
+//        assertEquals(adminService.rejectUsers(1),deleteResponse);
+//
+//        ResponseEntity<UserRegistrationResponse> responseEntity = adminController.rejectUsers(1);
+//        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+//        assertThat(responseEntity.getBody()).isEqualTo(deleteResponse);
+//    }
 
 
 }

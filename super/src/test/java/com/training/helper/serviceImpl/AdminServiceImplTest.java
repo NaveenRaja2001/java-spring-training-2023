@@ -79,7 +79,7 @@ class AdminServiceImplTest {
     void deleteUsers() {
         UserCreationResponse deleteResponse = new UserCreationResponse();
         deleteResponse.setId(1);
-        deleteResponse.setDOB("19.10.2001");
+        deleteResponse.setDob("19.10.2001");
         deleteResponse.setEmail("naveen@gmail.com");
         deleteResponse.setGender("male");
 
@@ -128,7 +128,7 @@ class AdminServiceImplTest {
         newUser.setId(1);
         newUser.setRoles(role);
         HelperUserCreationRequest response = new HelperUserCreationRequest();
-        response.setDOB("12.01.2001");
+        response.setDob("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
         response.setId(1);
@@ -137,24 +137,24 @@ class AdminServiceImplTest {
         response.setLastName("N");
 
         org.openapitools.model.HelperDetails updatedHelperDetails = new org.openapitools.model.HelperDetails();
-        updatedHelperDetails.setPhonenumber(808764563L);
+        updatedHelperDetails.setPhoneNumber(808764563L);
         updatedHelperDetails.setStatus("active");
         updatedHelperDetails.setSkill("plumber");
-        response.setHelperdetails(List.of(updatedHelperDetails));
+        response.setHelperDetails(List.of(updatedHelperDetails));
 
         HelperUserCreationRequest helperUserCreationRequest = new HelperUserCreationRequest();
         helperUserCreationRequest.setFirstName("Naveen");
         helperUserCreationRequest.setId(1);
         helperUserCreationRequest.setLastName("N");
-        helperUserCreationRequest.setDOB("12.01.2001");
+        helperUserCreationRequest.setDob("12.01.2001");
         helperUserCreationRequest.setGender("male");
         helperUserCreationRequest.setEmail("naveen@gmail.com");
 
         org.openapitools.model.HelperDetails helperDetails = new org.openapitools.model.HelperDetails();
         helperDetails.setSkill("plumber");
-        helperDetails.setPhonenumber(808764563L);
+        helperDetails.setPhoneNumber(808764563L);
         helperDetails.setStatus("active");
-        helperUserCreationRequest.setHelperdetails(List.of(helperDetails));
+        helperUserCreationRequest.setHelperDetails(List.of(helperDetails));
         when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
         when(rolesRepository.findById(2)).thenReturn(Optional.of(role));
         assertEquals(adminService.updateHelper(helperUserCreationRequest), response);
@@ -170,7 +170,7 @@ class AdminServiceImplTest {
         newUser.setId(1);
         newUser.setRoles(role);
         ResidentUserCreationRequest response = new ResidentUserCreationRequest();
-        response.setDOB("12.01.2001");
+        response.setDob("12.01.2001");
         response.setEmail("naveen@gmail.com");
         response.setGender("male");
         response.setId(1);
@@ -180,7 +180,7 @@ class AdminServiceImplTest {
         response.setLastName("N");
 
         ResidentUserCreationRequest residentUserCreationRequest = new ResidentUserCreationRequest();
-        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setDob("12.01.2001");
         residentUserCreationRequest.setId(1);
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
@@ -225,7 +225,7 @@ class AdminServiceImplTest {
     void getAllRequestedUser() {
         UserCreationResponse userOne = new UserCreationResponse();
         userOne.setId(1);
-        userOne.setDOB("12.10.2001");
+        userOne.setDob("12.10.2001");
         userOne.setEmail("naveen@gmail.com");
         userOne.setGender("male");
 
@@ -255,5 +255,31 @@ class AdminServiceImplTest {
         when(userRepository.findAllByStatus(CommonConstants.STATUS_REQUESTED)).thenReturn(List.of(newUser));
         List<UserCreationResponse> response = adminService.getAllRequestedUser();
         assertEquals(response, List.of(userOne));
+    }
+
+    @Test
+    void approveOrRejectUser() {
+        UserRegistrationResponse deleteResponse = new UserRegistrationResponse();
+        deleteResponse.setId(1);
+        deleteResponse.setRole("HELPER");
+        deleteResponse.setFirstName("Naveen");
+        deleteResponse.setLastName("N");
+        deleteResponse.setStatus(CommonConstants.STATUS_REJECTED);
+
+        User newUser = new User(1, "Naveen", "N", "19.10.2001", "male", "naveen@gmail.com", "pass", "requested");
+        Roles newRoles = new Roles();
+        newRoles.setName("HELPER");
+        newRoles.setDescription("helper");
+        newRoles.setId(2);
+        newUser.setRoles(newRoles);
+        HelperDetails helperDetails = new HelperDetails();
+        helperDetails.setUser(newUser);
+        helperDetails.setSkill("cook");
+        helperDetails.setStatus("active");
+        helperDetails.setPhoneNumber(90868769L);
+        helperDetails.setId(2);
+        when(userRepository.findById(1)).thenReturn(Optional.of(newUser));
+
+        assertEquals(adminService.approveOrRejectUser("reject",1), deleteResponse);
     }
 }

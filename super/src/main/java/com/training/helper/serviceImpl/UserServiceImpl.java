@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
                     userStatus = CommonConstants.STATUS_APPROVED;
                 }
             }
-            User newUser = new User(residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDOB(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), userStatus);
+            User newUser = new User(residentUserCreationRequest.getFirstName(), residentUserCreationRequest.getLastName(), residentUserCreationRequest.getDob(), residentUserCreationRequest.getGender(), residentUserCreationRequest.getEmail(), passwordEncoder.encode(residentUserCreationRequest.getPassword()), userStatus);
             Roles newRoles = rolesRepository.findById(1).orElseThrow(() -> new HelperAppException(ErrorConstants.NO_HELPER_EXISTS_ERROR));
             newUser.setRoles(newRoles);
             userRepository.save(newUser);
@@ -108,11 +108,11 @@ public class UserServiceImpl implements UserService {
                     userStatus = CommonConstants.STATUS_APPROVED;
                 }
             }
-            User newUser = new User(helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDOB(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), userStatus);
+            User newUser = new User(helperUserCreationRequest.getFirstName(), helperUserCreationRequest.getLastName(), helperUserCreationRequest.getDob(), helperUserCreationRequest.getGender(), helperUserCreationRequest.getEmail(), passwordEncoder.encode(helperUserCreationRequest.getPassword()), userStatus);
             userCreationResponse = new UserRegistrationResponse();
             //TODO
             Roles newRoles = rolesRepository.findById(2).orElseThrow(() -> new HelperAppException(ErrorConstants.ROLE_NOT_FOUND));
-            HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperdetails().get(0).getPhonenumber(), helperUserCreationRequest.getHelperdetails().get(0).getSkill(), helperUserCreationRequest.getHelperdetails().get(0).getStatus());
+            HelperDetails helperDetails = new HelperDetails(helperUserCreationRequest.getHelperDetails().get(0).getPhoneNumber(), helperUserCreationRequest.getHelperDetails().get(0).getSkill(), helperUserCreationRequest.getHelperDetails().get(0).getStatus());
             userRepository.save(newUser);
             helperDetails.setUser(newUser);
             newUser.setRoles(newRoles);

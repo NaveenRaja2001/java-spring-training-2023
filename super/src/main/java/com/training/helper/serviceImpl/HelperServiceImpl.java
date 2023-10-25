@@ -55,8 +55,8 @@ public class HelperServiceImpl implements HelperService {
                         response.setUserId(appointment.getResident().getId());
 
                         TimeSlot timeSlot = new TimeSlot();
-                        timeSlot.setStarttime(appointment.getSlots().getStartTime().toString());
-                        timeSlot.setEndtime(appointment.getSlots().getEndTime().toString());
+                        timeSlot.setStartTime(appointment.getSlots().getStartTime().toString());
+                        timeSlot.setEndTime(appointment.getSlots().getEndTime().toString());
                         timeSlot.setId(appointment.getSlots().getId());
                         response.setTimeslot(List.of(timeSlot));
 

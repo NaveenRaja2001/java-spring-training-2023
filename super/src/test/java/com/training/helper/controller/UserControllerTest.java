@@ -54,7 +54,7 @@ class UserControllerTest {
         response.setStatus("requested");
 
         UserRegistrationRequest residentUserCreationRequest = new UserRegistrationRequest();
-        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setDob("12.01.2001");
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
 
@@ -97,7 +97,7 @@ class UserControllerTest {
         response.setStatus("requested");
 
         UserRegistrationRequest residentUserCreationRequest = new UserRegistrationRequest();
-        residentUserCreationRequest.setDOB("12.01.2001");
+        residentUserCreationRequest.setDob("12.01.2001");
         residentUserCreationRequest.setEmail("naveen@gmail.com");
         residentUserCreationRequest.setGender("male");
         residentUserCreationRequest.setRole(UserRegistrationRequest.RoleEnum.RESIDENT);

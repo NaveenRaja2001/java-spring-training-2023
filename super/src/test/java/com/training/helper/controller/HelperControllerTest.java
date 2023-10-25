@@ -41,8 +41,8 @@ HelperController helperController;
         bookingResponse.setUserId(1);
 
         TimeSlot timeSlot = new TimeSlot();
-        timeSlot.setStarttime("12:00");
-        timeSlot.setEndtime("13:00");
+        timeSlot.setStartTime("12:00");
+        timeSlot.setEndTime("13:00");
         timeSlot.setId(1);
         bookingResponse.setTimeslot(List.of(timeSlot));
         when(helperService.getAllHelpersBooking(2)).thenReturn(List.of(bookingResponse));

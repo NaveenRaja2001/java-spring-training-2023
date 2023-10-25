@@ -39,17 +39,22 @@ public class ScheduleMessage {
 
     @Scheduled(fixedRate = CommonConstants.TIME_LIMIT)
     public void fixedRateSch() {
-        List<TokenExpired> tokenList = tokenExpiredRepository.findAll();
-        List<TokenExpired> tokenExpiredList = tokenList.stream()
-                .filter(value -> {
-                    String token = value.getToken();
-                    DecodedJWT decodedJWT = JWT.decode(token);
-                    long remainingTime = decodedJWT.getExpiresAt().getTime() - new Date().getTime();
-                    return remainingTime <= 0;
-                })
-                .collect(Collectors.toList());
-        if (!tokenExpiredList.isEmpty()) {
-            tokenExpiredRepository.deleteAll(tokenExpiredList);
+        try {
+            List<TokenExpired> tokenList = tokenExpiredRepository.findAll();
+            List<TokenExpired> tokenExpiredList = tokenList.stream()
+                    .filter(value -> {
+                        String token = value.getToken();
+                        DecodedJWT decodedJWT = JWT.decode(token);
+                        long remainingTime = decodedJWT.getExpiresAt().getTime() - new Date().getTime();
+                        return remainingTime <= 0;
+                    })
+                    .collect(Collectors.toList());
+            if (!tokenExpiredList.isEmpty()) {
+                tokenExpiredRepository.deleteAll(tokenExpiredList);
+            }
+        }
+        catch (Exception e){
+            throw new HelperAppException(e.getMessage());
         }
     }
 }
